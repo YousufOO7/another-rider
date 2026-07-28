@@ -1,0 +1,37 @@
+{
+    "customerData": [
+          {
+    "id": "#DR-0921",
+    "name": "Sarah Jenkins",
+    "avatar": "",
+    "status": "Active",
+    "type": "VIP Gold",
+    "phone": "+1 (555) 012-3456",
+    "email": "sarah@gmail.com",
+    "lifeTimeSpend": 14250,
+    "lastTrips": "2 days ago"
+  },
+  {
+    "id": "#DR-0885",
+    "name": "Sarah Johansson",
+    "avatar": "",
+    "status": "Active",
+    "email": "johansson@gmail.com",
+    "type": "",
+    "phone": "+1 (555) 987-6543",
+    "lifeTimeSpend": 142800,
+    "lastTrips": "today"
+  },
+  {
+    "id": "#DR-1044",
+    "name": "Rajeev Patel",
+    "avatar": "",
+    "status": "Active",
+    "email": "rajeev@gmail.co,",
+    "type": "Retail",
+    "phone": "+1 (555) 456-7890",
+    "lifeTimeSpend": 850,
+    "lastTrips": "1 week ago"
+  }
+    ]
+}

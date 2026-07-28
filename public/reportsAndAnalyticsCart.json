@@ -1,0 +1,24 @@
+{
+     "reportsAndAnalytics": [
+    {
+      "title": "Total Revenue",
+      "main_value": "$124500",
+      "comparison": "+12% vs yesterday"
+    },
+    {
+      "title": "Completed Trips",
+      "main_value": "888",
+      "comparison": "+5% from last month"
+    },
+    {
+      "title": "Avg Booking Value",
+      "main_value": "$147.41",
+      "comparison": "+14% from last month"
+    },
+    {
+      "title": "On-Time Performance",
+      "main_value": "98.99%",
+      "comparison": "+0.5% from last month"
+    }
+  ]
+}

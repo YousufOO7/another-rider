@@ -1,0 +1,32 @@
+{
+     "bookStats": [
+    {
+      "title": "Today's Bookings",
+      "subtitle": "Confirmed / Total",
+      "main_value": "42",
+      "breakdown": ["36 confirmed", "4 in progress", "2 pending"],
+      "comparison": "+12% vs yesterday"
+    },
+    {
+      "title": "All Trips",
+      "subtitle": "Right now on the road",
+      "main_value": "8",
+      "breakdown": ["5 airport", "2 hourly", "1 point-to-point"],
+      "comparison": null
+    },
+    {
+      "title": "Drivers Online",
+      "subtitle": "Available for dispatch",
+      "main_value": "15",
+      "breakdown": ["11 free", "2 on break", "2 at pickup"],
+      "comparison": null
+    },
+    {
+      "title": "Revenue",
+      "subtitle": "Today / This week",
+      "main_value": "$4,250",
+      "breakdown": ["5 corporate", "11 retail bookings"],
+      "comparison": "This week $28.4k"
+    }
+  ]
+}

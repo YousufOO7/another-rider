@@ -1,0 +1,49 @@
+{
+  "operations": [
+    {
+      "id": "#8291",
+      "customer": "Sarah Jenkins",
+      "sub": "Premium Sedan b7 JFK Arrival",
+      "route": "JFK T4",
+      "destination": "Manhattan, 5th Ave",
+      "driver": {
+        "name": "Marco Rivera",
+        "avatar": "/avatar-1.png"
+      },
+      "status": {
+        "label": "In Progress",
+        "variant": "blue"
+      },
+      "eta": "14m"
+    },
+    {
+      "id": "#8292",
+      "customer": "Goldman Sachs (Corp)",
+      "sub": "SUV Escalade b7 Executive",
+      "route": "Wall St",
+      "destination": "Teterboro Airport",
+      "driver": {
+        "name": "David King",
+        "avatar": ""
+      },
+      "status": {
+        "label": "Driver Arrived",
+        "variant": "yellow"
+      },
+      "eta": "--"
+    },
+    {
+      "id": "#8295",
+      "customer": "Michael Chang",
+      "sub": "Mercedes S-Class",
+      "route": "SoHo House",
+      "destination": "EWR Airport",
+      "driver": null,
+      "status": {
+        "label": "Pending Assign",
+        "variant": "red"
+      },
+      "eta": "55m"
+    }
+  ]
+}

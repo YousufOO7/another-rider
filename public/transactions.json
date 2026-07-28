@@ -1,0 +1,116 @@
+{ 
+    "transactions" : [
+  {
+    "id": "#INV-2024-001",
+    "title": "Corp Booking - Monthly Retainer",
+    "subtitle": "Google Inc. HQ",
+    "entity": {
+      "name": "Google Inc.",
+      "avatar": "G"
+    },
+    "date": "2024-10-24",
+    "amount": 4500,
+    "status": "paid"
+  },
+  {
+    "id": "#PAY-9821",
+    "title": "Weekly Driver Payout",
+    "subtitle": "Period: Oct 15 - Oct 21",
+    "entity": {
+    "  name": "Michael B.",
+    "  avatar": "https://i.pravatar.cc/100?img=12"
+    },
+    "date": "2024-10-23",
+    "amount": -1250,
+    "status": "processing"
+  },
+  {
+    "id": "#INV-2024-004",
+    "title": "Airport Transfer - Round Trip",
+    "subtitle": "JFK to Manhattan",
+    "entity": {
+      "name": "Sarah Jenkins",
+      "avatar": "https://i.pravatar.cc/100?img=32"
+    },
+    "date": "2024-10-22",
+    "amount": 350,
+    "status": "pending"
+  }
+],
+    "invoices" : [
+  {
+    "id": "#INV-2024-01",
+    "title": "Booking - Monthly Retainer",
+    "subtitle": "Google Inc. HQ",
+    "entity": {
+      "name": "Google Inc.",
+      "avatar": "G"
+    },
+    "date": "2024-10-24",
+    "amount": 4500,
+    "status": "paid"
+  },
+  {
+    "id": "#PAY-98",
+    "title": "Weekly Driver Payout",
+    "subtitle": "Period: Oct 15 - Oct 21",
+    "entity": {
+    "  name": "Michael D.",
+    "  avatar": "https://i.pravatar.cc/100?img=12"
+    },
+    "date": "2024-10-23",
+    "amount": -1250,
+    "status": "processing"
+  },
+  {
+    "id": "#INV-2024-004",
+    "title": "Airport Transfer - Round Trip",
+    "subtitle": "JFK to Manhattan",
+    "entity": {
+      "name": "Sarah Jenkins",
+      "avatar": "https://i.pravatar.cc/100?img=32"
+    },
+    "date": "2024-10-22",
+    "amount": 350,
+    "status": "pending"
+  }
+],
+    "driverPayouts" : [
+  {
+    "id": "#INV-2024-333",
+    "title": "Corp - Monthly Retainer",
+    "subtitle": "Google Inc. HQ",
+    "entity": {
+      "name": "Google Inc.",
+      "avatar": "G"
+    },
+    "date": "2024-10-24",
+    "amount": 4500,
+    "status": "paid"
+  },
+  {
+    "id": "#PAY-9821",
+    "title": "Weekly Driver Payout",
+    "subtitle": "Period: Oct 15 - Oct 21",
+    "entity": {
+    "  name": "Michael B.",
+    "  avatar": "https://i.pravatar.cc/100?img=12"
+    },
+    "date": "2024-10-23",
+    "amount": -1250,
+    "status": "processing"
+  },
+  {
+    "id": "#INV-2024-004",
+    "title": "Airport Transfer - Round Trip",
+    "subtitle": "JFK to Manhattan",
+    "entity": {
+      "name": "Sarah Jenkins",
+      "avatar": "https://i.pravatar.cc/100?img=32"
+    },
+    "date": "2024-10-22",
+    "amount": 350,
+    "status": "pending"
+  }
+]
+}

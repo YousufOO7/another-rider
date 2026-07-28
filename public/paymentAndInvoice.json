@@ -1,0 +1,24 @@
+{
+     "paymentAndInvoice": [
+    {
+      "title": "Today's Bookings",
+      "main_value": "$124500",
+      "comparison": "+12% vs yesterday"
+    },
+    {
+      "title": "All Trips",
+      "main_value": "$18000",
+      "comparison": null
+    },
+    {
+      "title": "Drivers Online",
+      "main_value": "$15000",
+      "comparison": null
+    },
+    {
+      "title": "Revenue",
+      "main_value": "$3,250",
+      "comparison": "This week $28.4k"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+     "customerStats": [
+    {
+      "title": "Total Customer",
+      "main_value": "1240",
+      "comparison": "+12% this week"
+    },
+    {
+      "title": "VIP Profile",
+      "main_value": "8",
+      "comparison": "Hight value individuals"
+    },
+    {
+      "title": "Corporate Accounts",
+      "main_value": "15",
+      "comparison": "+2 new contracts"
+    },
+    {
+      "title": "Active this month",
+      "main_value": "325",
+      "comparison": "25% of user base"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+    "driversData": [
+          {
+    "id": "#DR-0921",
+    "name": "Michael Brown",
+    "avatar": "",
+    "status": "On Trip",
+    "statusColor": "bg-blue-100 text-blue-800",
+    "vehicle": "Cadillac Escalade",
+    "type": "SUV • AB-234-XY",
+    "phone": "+1 (555) 012-3456",
+    "rating": 4.9,
+    "trips": 5
+  },
+  {
+    "id": "#DR-0885",
+    "name": "Sarah Johansson",
+    "avatar": "",
+    "status": "Available",
+    "statusColor": "bg-green-100 text-green-800",
+    "vehicle": "Mercedes S580",
+    "type": "Sedan • NY-998-LM",
+    "phone": "+1 (555) 987-6543",
+    "rating": 5.0,
+    "trips": 2
+  },
+  {
+    "id": "#DR-1044",
+    "name": "Rajeev Patel",
+    "avatar": "",
+    "status": "Offline",
+    "statusColor": "bg-gray-100 text-gray-800",
+    "vehicle": "Sprinter Van",
+    "type": "Van • JV-402-KK",
+    "phone": "+1 (555) 456-7890",
+    "rating": 4.8,
+    "trips": 0
+  },
+  {
+    "id": "#DR-0552",
+    "name": "Tom Henderson",
+    "avatar": "",
+    "status": "Suspended",
+    "statusColor": "bg-red-100 text-red-800",
+    "vehicle": "Lincoln Continental",
+    "type": "Limo • LC-101-US",
+    "phone": "+1 (555) 222-3333",
+    "rating": 4.2,
+    "trips": 0
+  }
+    ]
+}
