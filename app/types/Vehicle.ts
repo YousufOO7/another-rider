@@ -1,6 +1,6 @@
 interface Vehicle {
   service_type: string;
-   vehicle_id: 1,
+   id: 1,
   name: "",
   class: "",
   image: "",

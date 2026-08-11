@@ -5,7 +5,7 @@ import { FiBriefcase, FiUsers } from "react-icons/fi";
 interface Props {
   vehicle: {
     service_type: string;
-   vehicle_id: 1,
+   id: 1,
   name: "",
   class: "",
   image: "",
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
-  // console.log("vehicle data 👉", vehicle?.service_type);
+  console.log("vehicle data 👉", vehicle?.service_type);
   return (
     <div
       onClick={onSelect}
@@ -31,11 +31,11 @@ const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
     >
       {/* Vehicle name */}
       <div className="col-span-5 flex items-center gap-1 ">
-        <img
+        {/* <img
           src={vehicle?.image || "img.freepik.com"}
           alt={vehicle.name}
           className="h-12 w-20 rounded-md object-cover "
-        />
+        /> */}
         <p className="block md:hidden text-xs">{vehicle.name.slice(0, 8)}...</p>
 
         <p className="hidden md:block">{vehicle.name}</p>
@@ -63,9 +63,9 @@ const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
 
       {/* Price + button */}
       <div className="col-span-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
+        {/* <div>
           <p className="font-semibold">${vehicle.total_price.toFixed(2)}</p>
-         {/* Dynamic Pricing Label */}
+         Dynamic Pricing Label
     {vehicle.service_type === "point_to_point" ? (
       <span className="text-xs text-gray-500">
         ${vehicle.rate} / km
@@ -75,7 +75,7 @@ const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
         ${vehicle.rate} / Hr
       </span>
     }
-        </div>
+        </div> */}
 
         {selected ? (
           <span className="text-xs bg-black text-white px-1 text-center  md:px-3 py-1 rounded-full">

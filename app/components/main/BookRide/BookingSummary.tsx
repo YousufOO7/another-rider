@@ -7,10 +7,6 @@ import { FaRegClock } from "react-icons/fa";
 
 interface BookingSummaryProps {
   vehicleName?: string;
-  baseRate: number;
-  taxesAndFees: number;
-  gratuity: number;
-  total: number;
   pickup?: string;
   dropoff?: string;
   date?: string;
@@ -23,10 +19,6 @@ interface BookingSummaryProps {
 
 const BookingSummary: FC<BookingSummaryProps> = ({
   vehicleName,
-  baseRate,
-  taxesAndFees,
-  gratuity,
-  total,
   pickup,
   dropoff,
   date,
@@ -98,30 +90,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
 
         <hr />
 
-        {/* Price breakdown */}
-        <div className="space-y-3">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Base rate</span>
-            <span>${baseRate.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Taxes & fees</span>
-            <span>${taxesAndFees.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Gratuity (20%)</span>
-            <span>${gratuity.toFixed(2)}</span>
-          </div>
-
-          <hr className="my-2" />
-
-          <div className="flex justify-between font-medium text-lg">
-            <span>Total</span>
-            <span className="text-primary">${total.toFixed(2)}</span>
-          </div>
-        </div>
+      
 
         <hr />
 
@@ -133,7 +102,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
             className="w-full text-base py-6 cursor-pointer"
             onClick={onConfirm}
           >
-            Confirm & pay ${total.toFixed(2)}
+            Confirm 
           </Button>
 
           <Button

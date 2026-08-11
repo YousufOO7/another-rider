@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useCreateBookingsMutation } from "@/app/redux/features/bookings/bookingsApi";
 import BackButton from "@/app/utils/common/BackButton";
 import Label from "@/app/utils/common/Label";
-import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
-import { setQuoteData } from "@/app/utils/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import BookingSummary from "./BookingSummary";
+import { useRouter } from "next/navigation";
 
 interface Props {
   onNext: () => void;
@@ -35,6 +33,8 @@ const PassengerInfo = ({
   setFormData,
   formData,
 }: Props) => {
+  const [showSummary, setShowSummary] = useState(false);
+  const router = useRouter();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -68,83 +68,33 @@ const PassengerInfo = ({
     }
   }, [setFormData]);
 
-  const [createBooking] = useCreateBookingsMutation({});
-  const totalPrice = formData?.vehicle?.calculation?.total_price || 0;
-
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
-  const buildPayload = (includeVehicleId = false) => {
-    const pickupDateTime = formData.pickupDate
-      ? `${formData.pickupDate.getFullYear()}-${String(
-          formData.pickupDate.getMonth() + 1,
-        ).padStart(2, "0")}-${String(formData.pickupDate.getDate()).padStart(
-          2,
-          "0",
-        )} ${formData.pickupTime}`
-      : null;
-
-    const totalHours =
-      Number(formData.hours || 0) + Number(formData.minutes || 0) / 60;
-
-    const {
-      fullName,
-      email,
-      phone,
-      flightNumber,
-      airline,
-      childSeat,
-      instructions,
-    } = formData.passengerInfo || {};
-
-    return {
-      service_type: formData.mode,
-      pickup_time: pickupDateTime,
-      pickup_address: formData.pickup_address,
-      dropoff_address: formData.dropoff_address,
-      passengers: formData.passengers.passengers,
-      distance_km: formData.distanceValue / 1000,
-      child_seats: formData.passengers.kids || 0,
-      hours: totalHours,
-      name: fullName,
-      email: email,
-      phone: phone,
-      // Optional fields
-      flight_number: flightNumber || null,
-      airline: airline || null,
-      child_seat_required: childSeat || false,
-      special_instructions: instructions || null,
-      ...(includeVehicleId && {
-        vehicle_id: formData.vehicle?.vehicle_id,
-      }),
-    };
-  };
 
   const validatePassengerInfo = () => {
     const { fullName, email, phone } = passengerInfo;
 
     if (!fullName) {
       toast.error("Please fill in all required fields Full Name");
-      return;
+      return false;
     }
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast.error("Please enter a valid email address");
-      return;
+      return false;
     }
 
     // Phone validation (basic)
     if (phone.length < 11) {
       toast.error("Please enter a valid phone number");
-      return;
+      return false;
     }
 
     return true;
   };
 
-  const handleSeePriceQuote = async () => {
+  const handleShowSummary = async () => {
     try {
       if (!validatePassengerInfo()) {
         return;
@@ -152,34 +102,47 @@ const PassengerInfo = ({
 
       setIsLoading(true);
 
-      const payload = buildPayload(true);
-      // console.log("Sending payload to API:", payload);
-      // return;
+      // Check if booking already exists from SelectVehicle
+      if (formData?.bookingId) {
+        // Booking already created in SelectVehicle, just show summary
+        setShowSummary(true);
+        setIsLoading(false);
+        return;
+      }
 
-      const res = await createBooking(payload).unwrap();
-
-      const bookingId = res?.data?.id;
-      const bookingToken = res?.booking_access_token;
-      const customerId = res?.data?.customer_id;
-
-      const updatedFormData = {
-        ...formData,
-        booking_id: bookingId,
-        booking_access_token: bookingToken,
-        customer_id: customerId,
-      };
-
-      setQuoteData(updatedFormData);
-      setFormData(updatedFormData);
-
-      router.push("/manage-reservation?from=book-a-ride");
+      // If no booking exists (shouldn't happen with current flow)
+      toast.error("No booking found. Please select a vehicle first.");
+      setIsLoading(false);
+      
     } catch (error) {
-      toast.error("Failed to fetch price quote. Please try again.");
-      console.error("Booking failed:", error);
-    } finally {
+      toast.error("Something went wrong. Please try again.");
+      console.error("Error:", error);
       setIsLoading(false);
     }
   };
+
+  // If showSummary is true, render BookingSummary
+  if (showSummary) {
+    return (
+      <div className="max-w-6xl mx-auto p-4">
+        <BackButton onClick={() => setShowSummary(false)} text="Back to passenger details" />
+        <div className="mt-4">
+          <BookingSummary
+            vehicleName={formData?.vehicle?.name || "Vehicle"}
+            pickup={formData?.pickup_address}
+            dropoff={formData?.dropoff_address}
+            date={formData?.pickupDate?.toLocaleDateString()}
+            time={formData?.pickupTime}
+            passengers={formData?.passengers?.passengers}
+            bags={formData?.passengers?.bags}
+            onConfirm={() => {
+              router.push("/");
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -203,9 +166,6 @@ const PassengerInfo = ({
             <h3 className="font-bold mb-1 text-lg md:text-2xl">
               Contact person
             </h3>
-            {/* <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full">
-            Step 3 of 4
-          </span> */}
           </div>
 
           {/* Contact person */}
@@ -339,21 +299,8 @@ const PassengerInfo = ({
             </div>
           </div>
 
-          <div className="flex justify-between items-center gap-6">
-            <div>
-              <DistanceDisplay
-                distance={formData.distance}
-                duration={formData.duration}
-              />
-            </div>
-
-            <div className="rounded-lg border bg-gray-50 px-4 py-3">
-              <p>Total Price: ${totalPrice.toFixed(2)}</p>
-            </div>
-          </div>
-
           {/* Footer */}
-          <div className=" hidden md:block">
+          <div className="hidden md:block">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-xs text-gray-400 md:max-w-2/3">
                 You can review all trip details on the next step before
@@ -361,12 +308,12 @@ const PassengerInfo = ({
               </p>
 
               <Button
-                onClick={handleSeePriceQuote}
+                onClick={handleShowSummary}
                 disabled={isLoading}
                 size={"sm"}
                 className="cursor-pointer py-2 mt-4 md:mt-0 font-medium flex items-center gap-2"
               >
-                {isLoading ? "Loading..." : "Continue to Payment →"}
+                {isLoading ? "Loading..." : "Show Summary →"}
               </Button>
             </div>
           </div>
@@ -382,11 +329,11 @@ const PassengerInfo = ({
 
       <div className="bg-white md:hidden py-2 flex justify-center">
         <Button
-          onClick={handleSeePriceQuote}
+          onClick={handleShowSummary}
           disabled={isLoading}
           className="cursor-pointer py-2 rounded-none mt-4 md:mt-0 font-medium flex items-center gap-2"
         >
-          {isLoading ? "Loading..." : "Continue to Payment →"}
+          {isLoading ? "Loading..." : "Show Summary →"}
         </Button>
       </div>
     </div>
