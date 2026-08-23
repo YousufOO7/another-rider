@@ -501,12 +501,12 @@ useEffect(() => {
 
             {/* CTA */}
             <div className="md:flex gap-5  md:justify-end">
-             <Button
+             {/* <Button
                 onClick={handleSeePriceQuote}
                 className="w-full md:w-32 mb-2 md:mb-0 cursor-pointer"
               >
                 See Price Quote
-              </Button>
+              </Button> */}
               <Button
                 className="w-full md:w-32 cursor-pointer"
                 onClick={handleSelectVehicle}

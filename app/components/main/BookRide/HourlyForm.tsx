@@ -475,11 +475,11 @@ const HourlyForm = ({
       {/* Footer */}
       <div className="flex justify-end gap-3">
         <Button variant="outline">Cancel</Button>
-        <Link href={"/price-quote"}>
+        {/* <Link href={"/price-quote"}>
           <Button variant={"outline"} className="cursor-pointer" onClick={handleSeePriceQuote}>
             See Quote Price
           </Button>
-        </Link>
+        </Link> */}
         <Button className="bg-black text-white cursor-pointer" onClick={handleSelectVehicle}>
           Continue
         </Button>
