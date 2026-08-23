@@ -22,12 +22,12 @@ export const publicNavigationLinks: INavigationLinks[] = [
     key: "book-a-ride",
     href: "/book-a-ride",
   },
-  {
-    icon: LuListOrdered,
-    label: "Price Quote",
-    key: "price-quote-component",
-    href: "/price-quote-component",
-  },
+  // {
+  //   icon: LuListOrdered,
+  //   label: "Price Quote",
+  //   key: "price-quote-component",
+  //   href: "/price-quote-component",
+  // },
   // {
   //   icon: LuListOrdered,
   //   label: "Price Quote",
