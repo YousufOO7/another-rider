@@ -11,7 +11,7 @@ const BookingOnlineForm = () => {
   return (
     
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-white">
-      <div className="md:max-w-3xl  bg-white p-10 text-center shadow-md border-[1px] rounded-sm">
+      <div className="md:max-w-3xl  bg-white p-10 text-center shadow-md border rounded-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-black text-white">
@@ -47,12 +47,11 @@ const BookingOnlineForm = () => {
             <LuCalendarPlus className="text-lg" />
             <p className="text-xs font-bold mt-1"  >Quick Receipt</p>
           </div>
-          <Link href={"/manage-reservation"}>
+          {/* href={"/manage-reservation"} */}
            <div className="w-full py-2 md:w-32 md:h-24 text-white bg-black rounded-md cursor-pointer flex md:flex-col items-center justify-center text-center gap-1">
             <LuCalendarPlus className="text-lg" />
             <p className="text-xs font-bold mt-1"  >Manage Reservations</p>
           </div>
-          </Link>
         </div>
 
         {/* Login */}
