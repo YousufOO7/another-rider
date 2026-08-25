@@ -4,8 +4,8 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import { useAppConfig } from "@/app/utils/helper/useAppConfig";
-// import ButtonLoader from "@/app/utils/common/ButtonLoader";
+import { useAppConfig } from "@/app/utils/helper/useAppConfig";
+import ButtonLoader from "@/app/utils/common/ButtonLoader";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -26,7 +26,7 @@ import { useCustomerLogoutMutation } from "@/app/redux/features/auth/authApi";
 const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
   const router = useRouter();
   console.log(onBookOnline);
-  // const { platformName, isLoading, platformLogo } = useAppConfig();
+  const { platformName, isLoading, } = useAppConfig();
   const [token, setToken] = useState<string | null>(null);
   const [customerLogout] = useCustomerLogoutMutation();
 
@@ -34,6 +34,7 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
     const t = shareWithCookies("get", `${appConfiguration.appCode}token`);
     setToken(t || null);
   }, []);
+
 
   const handleLogout = async () => {
      const res = await customerLogout({}).unwrap();
@@ -65,7 +66,7 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
 
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-2">
-          Welcome to online booking system
+          Welcome to {isLoading ? <ButtonLoader /> : platformName} booking system
         </h2>
         <p className="text-sm text-gray-500 mb-6">
           Book your ride online in a minute!

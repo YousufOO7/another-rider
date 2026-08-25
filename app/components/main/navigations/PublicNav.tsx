@@ -56,7 +56,7 @@ const PublicNav = ({ onBookOnline }: { onBookOnline: () => void }) => {
     }
   });
 
-  const {platformName, isLoading, platformLogo} = useAppConfig();
+  const { isLoading, platformLogo} = useAppConfig();
 
   return (
     <nav className="bg-white border-b hidden md:block">
@@ -83,7 +83,7 @@ const PublicNav = ({ onBookOnline }: { onBookOnline: () => void }) => {
                       />
                     )}
 
-                    <span>{platformName || "Add Name"}</span>
+                    {/* <span>{platformName || "Add Name"}</span> */}
                   </>
                 )}
               </span>

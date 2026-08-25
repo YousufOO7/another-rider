@@ -26,6 +26,7 @@ import {
 import { setUser } from "@/app/redux/features/user/userSlice";
 import { useAppConfig } from "@/app/utils/helper/useAppConfig";
 import ButtonLoader from "@/app/utils/common/ButtonLoader";
+// import ButtonLoader from "@/app/utils/common/ButtonLoader";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -33,7 +34,7 @@ const Login = () => {
   const [login, { isLoading: loginLoading }] = useLoginCustomerMutation();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { platformName, isLoading, platformLogo } = useAppConfig();
+  const { isLoading, platformLogo } = useAppConfig();
 
   const {
     register,
@@ -114,7 +115,7 @@ const Login = () => {
         {/* Logo */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 mb-6">
           <div className="flex h-8 w-32 items-center justify-center rounded-md bg-black text-white">
-            {platformLogo && (
+            {isLoading ? <ButtonLoader /> : platformLogo && (
               <img
                 src={platformLogo}
                 alt="Platform Logo"
@@ -122,9 +123,9 @@ const Login = () => {
               />
             )}
           </div>
-          <h1 className="text-2xl font-bold">
+          {/* <h1 className="text-2xl font-bold">
             {isLoading ? <ButtonLoader /> : platformName}
-          </h1>
+          </h1> */}
         </div>
 
         {/* Login Form */}
