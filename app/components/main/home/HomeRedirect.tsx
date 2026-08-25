@@ -89,7 +89,10 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
           <Button className="rounded-md px-6 cursor-pointer">
             Price Quote
           </Button>
-          <Button className="rounded-md px-6 cursor-pointer">
+          <Button
+            onClick={() => router.push("/quick-receipt")}
+            className="rounded-md px-6 cursor-pointer"
+          >
             Quick Receipt
           </Button>
           <Button

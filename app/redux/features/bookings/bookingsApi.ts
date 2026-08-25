@@ -83,6 +83,22 @@ export const bookingsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["bookings"],
     }),
+
+
+    // quick receipt data
+    quickReceipt: builder.mutation<Blob, {
+  booking_id: number;
+  email: string;
+  trip_date: string;
+}>({
+  query: (data) => ({
+    url: '/bookings/quick-receipt',
+    method: 'POST',
+    body: data,
+    responseHandler: (response) => response.blob(),
+  }),
+}),
+
   }),
 });
 
@@ -94,5 +110,6 @@ export const {
   useLazyGetBookingsDownloadCsvQuery,
   useUpdateBookingStatusMutation,
   useAssignBookingDriverMutation,
-  usePaymentCaptureMutation
+  usePaymentCaptureMutation,
+  useQuickReceiptMutation,
 } = bookingsApi;

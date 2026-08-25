@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -34,7 +33,7 @@ const Login = () => {
   const [login, { isLoading: loginLoading }] = useLoginCustomerMutation();
   const dispatch = useDispatch();
   const router = useRouter();
-  const { isLoading, platformLogo } = useAppConfig();
+  const { platformName, isLoading } = useAppConfig();
 
   const {
     register,
@@ -114,18 +113,9 @@ const Login = () => {
       <div className="w-full max-w-md bg-white p-8 shadow-md border rounded-sm">
         {/* Logo */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-2 mb-6">
-          <div className="flex h-8 w-32 items-center justify-center rounded-md bg-black text-white">
-            {isLoading ? <ButtonLoader /> : platformLogo && (
-              <img
-                src={platformLogo}
-                alt="Platform Logo"
-                className="w-32 h-8 object-cover rounded"
-              />
-            )}
-          </div>
-          {/* <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-bold">
             {isLoading ? <ButtonLoader /> : platformName}
-          </h1> */}
+          </h1>
         </div>
 
         {/* Login Form */}

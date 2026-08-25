@@ -94,7 +94,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
           </div>
           <div className="bg-white/20 px-3 py-1.5 rounded-full">
             <span className="text-white text-xs font-semibold">
-              #{bookingId || "BK-2026"}
+             Booking ID #{bookingId || "BK-2026"}
             </span>
           </div>
         </div>
@@ -218,7 +218,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
         <div className="space-y-3 pt-1">
           <Button
             size="lg"
-            className="w-full bg-linear-to-r from-black to-black hover:from-black hover:to-black text-white text-base font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer group"
+            className="w-full bg-linear-to-r from-black to-black hover:from-black hover:to-black text-white text-base font-semibold py-6 hover:shadow-xl transition-all duration-200 cursor-pointer group"
             onClick={onConfirm}
           >
             <span>Pay Later at Trip End</span>

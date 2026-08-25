@@ -43,10 +43,12 @@ const BookingOnlineForm = () => {
             <LuCalendarPlus className="text-lg" />
             <p className="text-xs font-bold mt-1">Price Quote</p>
           </div>
+          <Link href="/quick-receipt">
            <div className="w-full py-2 md:w-32 md:h-24 text-white bg-black rounded-md cursor-pointer flex md:flex-col items-center justify-center text-center gap-1">
             <LuCalendarPlus className="text-lg" />
             <p className="text-xs font-bold mt-1"  >Quick Receipt</p>
           </div>
+          </Link>
           {/* href={"/manage-reservation"} */}
            <div className="w-full py-2 md:w-32 md:h-24 text-white bg-black rounded-md cursor-pointer flex md:flex-col items-center justify-center text-center gap-1">
             <LuCalendarPlus className="text-lg" />

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Car, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Label from "@/app/utils/common/Label";
@@ -61,9 +61,6 @@ const Registration = () => {
       <div className="w-full max-w-md bg-white p-8 shadow-md border rounded-sm">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-black text-white">
-            <Car size={16} />
-          </div>
           <h1 className="text-2xl font-bold">{isLoading ? <ButtonLoader /> : platformName}</h1>
         </div>
 
