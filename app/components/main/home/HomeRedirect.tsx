@@ -96,7 +96,7 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
             Quick Receipt
           </Button>
           <Button
-            onClick={() => router.push("/manage-reservation")}
+            // onClick={() => router.push("/manage-reservation")}
             className="rounded-md px-6 cursor-pointer"
           >
             Manage Reservations
