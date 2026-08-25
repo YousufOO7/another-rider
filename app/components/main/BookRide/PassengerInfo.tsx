@@ -135,6 +135,7 @@ const PassengerInfo = ({
             time={formData?.pickupTime}
             passengers={formData?.passengers?.passengers}
             bags={formData?.passengers?.bags}
+            bookingId={formData?.bookingId}
             onConfirm={() => {
               router.push("/");
             }}

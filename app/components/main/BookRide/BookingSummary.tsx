@@ -22,6 +22,7 @@ interface BookingSummaryProps {
   time?: string;
   passengers?: number;
   bags?: number;
+  bookingId?: string;
   onConfirm?: () => void;
   onPayLater?: () => void;
 }
@@ -44,6 +45,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
   time = "10:30 AM",
   passengers = 4,
   bags = 2,
+  bookingId,
   onConfirm,
 }) => {
   // Format date for better display
@@ -77,21 +79,23 @@ const BookingSummary: FC<BookingSummaryProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden h-full flex flex-col">
       {/* Header with gradient background */}
-      <div className="bg-linear-to-r from-blue-600 to-blue-700 px-6 py-5">
+      <div className="bg-linear-to-r from-black to-black px-6 py-5">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <span className="bg-white/20 p-1.5 rounded-lg">
                 <Car className="h-5 w-5 text-white" />
               </span>
-              Booking Summary
+              Booking Confirmed
             </h2>
             <p className="text-blue-100 text-sm mt-1 font-medium">
               Review & confirm your ride details
             </p>
           </div>
           <div className="bg-white/20 px-3 py-1.5 rounded-full">
-            <span className="text-white text-xs font-semibold">#BK-2026</span>
+            <span className="text-white text-xs font-semibold">
+              #{bookingId || "BK-2026"}
+            </span>
           </div>
         </div>
       </div>
@@ -133,7 +137,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
           <div className="flex items-center gap-6 flex-wrap">
             <div className="flex items-center gap-2">
               <div className="bg-blue-100 p-2 rounded-lg">
-                <Calendar className="h-4 w-4 text-blue-600" />
+                <Calendar className="h-4 w-4 text-black" />
               </div>
               <div>
                 <p className="text-xs text-gray-500">Date</p>
@@ -145,7 +149,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
             <div className="w-px h-8 bg-blue-200 hidden sm:block" />
             <div className="flex items-center gap-2">
               <div className="bg-blue-100 p-2 rounded-lg">
-                <Clock className="h-4 w-4 text-blue-600" />
+                <Clock className="h-4 w-4 text-black" />
               </div>
               <div>
                 <p className="text-xs text-gray-500">Time</p>
@@ -214,7 +218,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
         <div className="space-y-3 pt-1">
           <Button
             size="lg"
-            className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer group"
+            className="w-full bg-linear-to-r from-black to-black hover:from-black hover:to-black text-white text-base font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer group"
             onClick={onConfirm}
           >
             <span>Pay Later at Trip End</span>
