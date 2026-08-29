@@ -38,13 +38,13 @@ interface UserData {
 }
 
 const BookingSummary: FC<BookingSummaryProps> = ({
-  vehicleName = "Standard Sedan",
-  pickup = "123 Main Street, New York",
-  dropoff = "456 Park Avenue, Los Angeles",
-  date = "2026-08-23",
-  time = "10:30 AM",
-  passengers = 4,
-  bags = 2,
+  vehicleName ,
+  pickup,
+  dropoff ,
+  date ,
+  time ,
+  passengers ,
+  bags ,
   bookingId,
   onConfirm,
 }) => {
@@ -61,7 +61,7 @@ const BookingSummary: FC<BookingSummaryProps> = ({
     }
   }, []);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr?: string) => {
     if (!dateStr || dateStr === "N/A") return "N/A";
     try {
       const d = new Date(dateStr);

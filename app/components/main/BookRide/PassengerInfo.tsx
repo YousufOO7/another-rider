@@ -128,13 +128,14 @@ const PassengerInfo = ({
 
     // প্যাসেঞ্জার ইনফো যোগ করুন
     const passengerInfoData = formData?.passengerInfo || {};
+      const totalPassengers = (formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0);
 
     return {
       service_type: formData.mode,
       pickup_time: pickupDateTime,
       pickup_address: formData.pickup_address,
       dropoff_address: formData.dropoff_address,
-      passengers: formData.passengers.passengers,
+      passengers: totalPassengers,
       distance_km: formData.distanceValue / 1000,
       child_seats: formData.passengers.kids || 0,
       hours: totalHours,
@@ -217,7 +218,7 @@ const PassengerInfo = ({
             dropoff={formData?.dropoff_address}
             date={formData?.pickupDate?.toLocaleDateString()}
             time={formData?.pickupTime}
-            passengers={formData?.passengers?.passengers}
+            passengers={(formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0)}
             bags={formData?.passengers?.bags}
             bookingId={formData?.bookingId}
             onConfirm={() => {
