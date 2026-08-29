@@ -79,7 +79,7 @@ const PublicNav = ({ onBookOnline }: { onBookOnline: () => void }) => {
                       <img
                         src={platformLogo}
                         alt="Platform Logo"
-                        className="w-28 h-8 object-cover rounded"
+                        className=" h-8 bg-cover rounded"
                       />
                     )}
 
