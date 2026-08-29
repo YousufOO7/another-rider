@@ -64,7 +64,7 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
               key={vehicle?.id}
               vehicle={{
                 ...vehicle,
-                passengers: formData?.passengers?.passengers,
+                passengers: (formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0),
                 luggage: formData?.passengers?.bags,
                 service_type: formData?.mode,
               }}
