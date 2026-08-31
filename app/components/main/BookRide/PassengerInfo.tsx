@@ -147,9 +147,10 @@ const PassengerInfo = ({
       name: passengerInfoData.fullName || "",
       email: passengerInfoData.email || "",
       phone: passengerInfoData.phone || "",
+      customer_id: passengerInfoData.id || null,
       flight_number: passengerInfoData.flightNumber || "",
-      airline: passengerInfoData.airline || "",
-      special_instructions: passengerInfoData.instructions || "",
+      airlines: passengerInfoData.airline || "",
+      notes: passengerInfoData.instructions || "",
       child_seat_requested: passengerInfoData.childSeat || false,
     };
   };
