@@ -129,6 +129,7 @@ const PassengerInfo = ({
     // প্যাসেঞ্জার ইনফো যোগ করুন
     const passengerInfoData = formData?.passengerInfo || {};
       const totalPassengers = (formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0);
+    const totalLuggage = formData.passengers?.bags || 0;  
 
     return {
       service_type: formData.mode,
@@ -137,7 +138,8 @@ const PassengerInfo = ({
       dropoff_address: formData.dropoff_address,
       passengers: totalPassengers,
       distance_km: formData.distanceValue / 1000,
-      child_seats: formData.passengers.kids || 0,
+      child_seats: formData.passengers.child_seats || 0,
+      bags: totalLuggage || 0,
       hours: totalHours,
       ...(includeVehicleId && {
         vehicle_id: formData.vehicle?.id,

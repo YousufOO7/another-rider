@@ -46,7 +46,7 @@ const PriceSelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) =>
     dropoff_address: formData.dropoff_address,
     passengers: formData.passengers.passengers,
     distance_km: formData.distanceValue / 1000,
-    child_seats: formData.passengers.kids || 0,
+    child_seats: formData.passengers.child_seats || 0,
     hours: totalHours,
     ...(includeVehicleId && {
       vehicle_id: formData.vehicle?.id,
