@@ -128,7 +128,6 @@ const PassengerInfo = ({
 
     // প্যাসেঞ্জার ইনফো যোগ করুন
     const passengerInfoData = formData?.passengerInfo || {};
-      const totalPassengers = (formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0);
     const totalLuggage = formData.passengers?.bags || 0;  
 
     return {
