@@ -136,7 +136,7 @@ const PassengerInfo = ({
       pickup_time: pickupDateTime,
       pickup_address: formData.pickup_address,
       dropoff_address: formData.dropoff_address,
-      passengers: totalPassengers,
+      passengers: formData.passengers?.passengers || 0,
       distance_km: formData.distanceValue / 1000,
       child_seats: formData.passengers.child_seats || 0,
       bags: totalLuggage || 0,
