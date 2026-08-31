@@ -1,21 +1,21 @@
-/* eslint-disable @next/next/no-img-element */
+
 "use client";
 import { FiBriefcase, FiUsers } from "react-icons/fi";
 
 interface Props {
   vehicle: {
     service_type: string;
-   id: 1,
-  name: "",
-  class: "",
-  image: "",
-  capacity: 0,
-  rate: 0,
-  base_price: 0,
-  total_price: 0,
+   id: number;
+  name: string;
+  class: string;
+  image: string;
+  capacity: number;
+  rate: number;
+  base_price: number;
+  total_price: number;
   passengers: number;
   luggage: number;
-  recommended: true
+  recommended: boolean;
   };
   selected: boolean;
   onSelect: () => void;
@@ -39,6 +39,9 @@ const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
         <p className="block md:hidden text-xs">{vehicle.name.slice(0, 8)}...</p>
 
         <p className="hidden md:block">{vehicle.name}</p>
+        <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full ml-2">
+          {vehicle.capacity} seats
+        </span>
       </div>
 
       {/* Capacity */}

@@ -20,7 +20,47 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
   const {
     data: vehiclesData,
   } = useGetAllVehiclesQuery({});
+
   const vehicles = vehiclesData?.data || [];
+  // Total passengers + kids
+  const totalPassengers = formData.totalPassengers || 0;
+  const totalLuggage = formData.totalLuggage || 0;
+
+  // 🔥 Filter vehicles based on capacity
+  const filteredVehicles = vehicles.filter((vehicle: any) => {
+    const vehicleCapacity = vehicle.capacity || 0;
+    const vehicleLuggage = vehicle.luggage || 0;
+    
+    // Check if vehicle can accommodate all passengers and luggage
+    return vehicleCapacity >= totalPassengers && vehicleLuggage >= totalLuggage;
+  });
+
+  // Sort by capacity (small to large) for better UX
+  const sortedVehicles = [...filteredVehicles].sort((a, b) => a.capacity - b.capacity);
+
+  // Handle no vehicle found
+  if (sortedVehicles.length === 0) {
+    return (
+      <div className="mb-20">
+        <BackButton onClick={onBack} text="Back to where & when" />
+        <h2 className="text-xl font-semibold">Select your vehicle</h2>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center mt-4">
+          <p className="text-yellow-800 font-medium">
+            ⚠️ No vehicles available for {totalPassengers} passengers and {totalLuggage} luggage
+          </p>
+          <p className="text-sm text-yellow-600 mt-2">
+            Please reduce the number of passengers, kids, or luggage.
+          </p>
+          <Button 
+            onClick={onBack}
+            className="mt-4 bg-black text-white cursor-pointer"
+          >
+            Go Back & Adjust
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleNext = () => {
     if (!formData.vehicle) {
@@ -30,6 +70,7 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
     
     onNext();
   };
+
 
   return (
     <div className="mb-20">
@@ -59,12 +100,12 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
 
         {/* Vehicle list */}
         <div className="space-y-2 p-2 md:p-6">
-          {vehicles?.map((vehicle: any) => (
+          {sortedVehicles?.map((vehicle: any) => (
             <VehicleCard
               key={vehicle?.id}
               vehicle={{
                 ...vehicle,
-                passengers: (formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0),
+                passengers: totalPassengers,
                 luggage: formData?.passengers?.bags,
                 service_type: formData?.mode,
               }}

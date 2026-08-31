@@ -44,15 +44,46 @@ const WhereAndWhen = ({
   pickupTime,
    onShowPriceWhereAndWhen,
 }: Props) => {
+
+   const totalPassengers = (passengers?.passengers || 0) + (passengers?.child_seats || 0);
+  const totalLuggage = passengers?.bags || 0;
   
-  const updatePassenger = (key: PassengerKey, value: number) => {
-    setFormData((prev: { passengers: { [x: string]: number } }) => ({
+  // const updatePassenger = (key: PassengerKey, value: number) => {
+  //   setFormData((prev: { passengers: { [x: string]: number } }) => ({
+  //     ...prev,
+  //     passengers: {
+  //       ...prev.passengers,
+  //       [key]: Math.max(0, prev.passengers[key] + value),
+  //     },
+  //   }));
+  // };
+
+   // ✅ Update formData when passengers change
+  useEffect(() => {
+    setFormData((prev: any) => ({
       ...prev,
-      passengers: {
-        ...prev.passengers,
-        [key]: Math.max(0, prev.passengers[key] + value),
-      },
+      totalPassengers: totalPassengers,
+      totalLuggage: totalLuggage,
     }));
+  }, [totalPassengers, totalLuggage]);
+
+  const updatePassenger = (key: PassengerKey, value: number) => {
+    setFormData((prev: any) => {
+      const newPassengers = {
+        ...prev.passengers,
+        [key]: Math.max(0, (prev.passengers?.[key] || 0) + value),
+      };
+      
+      // ✅ Update total passengers
+      const total = (newPassengers.passengers || 0) + (newPassengers.child_seats || 0);
+      
+      return {
+        ...prev,
+        passengers: newPassengers,
+        totalPassengers: total,
+        totalLuggage: newPassengers.bags || 0,
+      };
+    });
   };
 
   const [draftStop, setDraftStop] = useState<{
@@ -207,10 +238,19 @@ useEffect(() => {
     return;
   }
 
-  if (!formData?.passengers?.passengers || formData?.passengers.passengers <= 0) {
-    toast.error("Please select number of passengers");
-    return;
-  }
+   const total = (formData?.passengers?.passengers || 0) + (formData?.passengers?.child_seats || 0);
+    
+    if (total <= 0) {
+      toast.error("Please select at least 1 passenger and 1 kid");
+      return;
+    }
+
+    // ✅ Save total to formData
+    setFormData((prev: any) => ({
+      ...prev,
+      totalPassengers: total,
+      totalLuggage: formData?.passengers?.bags || 0,
+    }));
 
   onNext();
 };
