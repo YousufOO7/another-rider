@@ -274,69 +274,66 @@ useEffect(() => {
 // };
 
     const handleSelectVehicle = async () => {
-    if (!formData?.pickup_address) {
-      toast.error("Pickup address is required");
-      return;
-    }
+  if (!formData?.pickup_address) {
+    toast.error("Pickup address is required");
+    return;
+  }
 
-    if (!formData?.dropoff_address) {
-      toast.error("Dropoff address is required");
-      return;
-    }
+  if (!formData?.dropoff_address) {
+    toast.error("Dropoff address is required");
+    return;
+  }
 
-    const total =
-      (formData?.passengers?.passengers || 0) +
-      (formData?.passengers?.child_seats || 0);
+  const passengers = formData?.passengers?.passengers || 0;
+  const children = formData?.passengers?.child_seats || 0;
+  const bags = formData?.passengers?.bags || 0;
+  const total = passengers + children;
 
-    if (total <= 0) {
-      toast.error("Please select at least 1 passenger");
-      return;
-    }
+  if (total <= 0) {
+    toast.error("Please select at least 1 passenger");
+    return;
+  }
 
-    // ✅ distance_km না থাকলে calculate করে wait করুন
-    if (!formData?.distance_km) {
-      try {
-        const result = await calculateDistance(
-          formData.pickup_address,
-          formData.dropoff_address
-        );
+  let distanceKm = formData?.distance_km || 0;
+  let distanceValue = (formData as any)?.distanceValue || 0;
 
-        // calculateDistance যদি return না করে, distance state থেকে নিন
-        const distanceValue =
-          (result as any)?.distanceValue ?? (distance as any)?.distanceValue;
+  // ✅ distance না থাকলে calculate
+  if (!distanceKm) {
+    try {
+      const result = await calculateDistance(
+        formData.pickup_address,
+        formData.dropoff_address
+      );
 
-        const distanceKm = distanceValue
-          ? Number((distanceValue / 1000).toFixed(1))
-          : 0;
+      distanceValue =
+        (result as any)?.distanceValue ?? (distance as any)?.distanceValue;
 
-        setFormData((prev: any) => ({
-          ...prev,
-          totalPassengers: total,
-          totalLuggage: formData?.passengers?.bags || 0,
-          distance_km: distanceKm,
-          distanceValue: distanceValue,
-        }));
+      distanceKm = distanceValue
+        ? Number((distanceValue / 1000).toFixed(1))
+        : 0;
 
-        // ✅ distance এখনো না থাকলে warn করুন
-        if (!distanceKm) {
-          toast.error("Distance calculate করা যায়নি, আবার চেষ্টা করুন");
-          return;
-        }
-      } catch (err) {
-        console.error("Distance calc failed:", err);
-        toast.error("Distance calculate করা যায়নি");
+      if (!distanceKm) {
+        toast.error("Distance calculate করা যায়নি, আবার চেষ্টা করুন");
         return;
       }
-    } else {
-      setFormData((prev: any) => ({
-        ...prev,
-        totalPassengers: total,
-        totalLuggage: formData?.passengers?.bags || 0,
-      }));
+    } catch (err) {
+      console.error("Distance calc failed:", err);
+      toast.error("Distance calculate করা যায়নি");
+      return;
     }
+  }
 
-    onNext();
-  };
+  // ✅ একবারেই সব set করুন
+  setFormData((prev: any) => ({
+    ...prev,
+    totalPassengers: total,
+    totalLuggage: bags,
+    distance_km: distanceKm,
+    distanceValue: distanceValue,
+  }));
+
+  onNext();
+};
 
    const handleSeePriceQuote = () => {
     const hasPickup = formData?.pickup_address?.trim();
