@@ -61,15 +61,16 @@ const BookRideForm = () => {
     },
   });
 
-      useEffect(() => {
+useEffect(() => {
   const storedData = getQuoteData();
   if (storedData) {
-    setFormData((prev: any) => ({
+    setFormData((prev) => ({
       ...prev,
       ...storedData,
       passengers: {
-        ...prev.passengers,
-        ...storedData.passengers,
+        passengers: storedData.passengers?.passengers ?? prev.passengers.passengers,
+        child_seats: storedData.passengers?.child_seats ?? prev.passengers.child_seats,
+        bags: storedData.passengers?.bags ?? prev.passengers.bags,
       },
       pickupDate: storedData.pickupDate ? new Date(storedData.pickupDate) : prev.pickupDate,
     }));

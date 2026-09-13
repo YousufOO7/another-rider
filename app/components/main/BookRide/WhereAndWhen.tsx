@@ -45,8 +45,8 @@ const WhereAndWhen = ({
    onShowPriceWhereAndWhen,
 }: Props) => {
 
-   const totalPassengers = (passengers?.passengers || 0) + (passengers?.child_seats || 0);
-  const totalLuggage = passengers?.bags || 0;
+  //  const totalPassengers = (passengers?.passengers || 0) + (passengers?.child_seats || 0);
+  // const totalLuggage = passengers?.bags || 0;
   
   // const updatePassenger = (key: PassengerKey, value: number) => {
   //   setFormData((prev: { passengers: { [x: string]: number } }) => ({
@@ -59,32 +59,37 @@ const WhereAndWhen = ({
   // };
 
    // ✅ Update formData when passengers change
-  useEffect(() => {
-    setFormData((prev: any) => ({
-      ...prev,
-      totalPassengers: totalPassengers,
-      totalLuggage: totalLuggage,
-    }));
-  }, [totalPassengers, totalLuggage]);
+  // useEffect(() => {
+  //   setFormData((prev: any) => ({
+  //     ...prev,
+  //     totalPassengers: totalPassengers,
+  //     totalLuggage: totalLuggage,
+  //   }));
+  // }, [totalPassengers, totalLuggage]);
 
   const updatePassenger = (key: PassengerKey, value: number) => {
-    setFormData((prev: any) => {
-      const newPassengers = {
-        ...prev.passengers,
-        [key]: Math.max(0, (prev.passengers?.[key] || 0) + value),
-      };
-      
-      // ✅ Update total passengers
-      const total = (newPassengers.passengers || 0) + (newPassengers.child_seats || 0);
-      
-      return {
-        ...prev,
-        passengers: newPassengers,
-        totalPassengers: total,
-        totalLuggage: newPassengers.bags || 0,
-      };
+  setFormData((prev: any) => {
+    const newPassengers = {
+      ...prev.passengers,
+      [key]: Math.max(0, (prev.passengers?.[key] || 0) + value),
+    };
+    
+    console.log("🔍 updatePassenger:", {
+      key,
+      value,
+      before: prev.passengers,
+      after: newPassengers,
     });
-  };
+    
+    const total = (newPassengers.passengers || 0) + (newPassengers.child_seats || 0);
+    return {
+      ...prev,
+      passengers: newPassengers,
+      totalPassengers: total,
+      totalLuggage: newPassengers.bags || 0,
+    };
+  });
+};
 
   const [draftStop, setDraftStop] = useState<{
     type: "pickup" | "dropoff";
@@ -326,6 +331,11 @@ useEffect(() => {
   // ✅ একবারেই সব set করুন
   setFormData((prev: any) => ({
     ...prev,
+    passengers: {
+      passengers: passengers + children,
+      child_seats: children,
+      bags: bags,
+    },
     totalPassengers: total,
     totalLuggage: bags,
     distance_km: distanceKm,
@@ -335,50 +345,7 @@ useEffect(() => {
   onNext();
 };
 
-   const handleSeePriceQuote = () => {
-    const hasPickup = formData?.pickup_address?.trim();
-    const hasDropoff = formData?.dropoff_address?.trim();
-    const hasPassengers = passengers?.passengers > 0;
 
-    // প্রথমে passenger সংখ্যা চেক করুন
-    if (!hasPassengers) {
-      toast.error("Please select at least 1 passenger");
-      return;
-    }
-
-    // তারপর pickup এবং dropoff চেক করুন
-    if (!hasPickup) {
-      toast.error("Please add pickup location first");
-      return;
-    }
-
-    if (!hasDropoff) {
-      toast.error("Please add dropoff location first");
-      return;
-    }
-
-    if (hasPickup && hasDropoff && hasPassengers) {
-      // যদি pickup এবং dropoff উভয়ই থাকে, তাহলে ডাটা স্টোরে সেভ করে PriceBookingForm-এর next step এ যান
-      const transferData = {
-        ...formData,
-        mode,
-        passengers: {
-          passengers: passengers.passengers,
-          child_seats: passengers.child_seats,
-          bags: passengers.bags,
-        },
-      };
-      setQuoteData(transferData);
-      onNext(); //  সরাসরি SelectVehicle এ যাবে (যেটা PriceBookingForm-এর step 2)
-    } else {
-      // যদি কোনোটি ফাঁকা থাকে, তাহলে PriceWhereAndWhen কম্পোনেন্ট দেখান
-      if (onShowPriceWhereAndWhen) {
-        onShowPriceWhereAndWhen(); //  PriceWhereAndWhen দেখাবে
-      } else {
-        toast.error("Please add pickup and dropoff locations first");
-      }
-    }
-  };
 
 
   return (
