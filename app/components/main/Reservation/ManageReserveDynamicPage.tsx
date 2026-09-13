@@ -1,6 +1,5 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 // import RideConfirm from "./RideConfirm";
 import { getQuoteData } from "@/app/utils/storage";
