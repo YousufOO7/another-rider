@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { useCreateBookingsMutation } from "@/app/redux/features/bookings/bookingsApi";
 import BackButton from "@/app/utils/common/BackButton";
 import Label from "@/app/utils/common/Label";
+import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
+import { setQuoteData } from "@/app/utils/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import BookingSummary from "./BookingSummary";
-import { useRouter } from "next/navigation";
-import { useCreateBookingsMutation } from "@/app/redux/features/bookings/bookingsApi"; // ইম্পোর্ট করুন
 
 interface Props {
   onNext: () => void;
@@ -34,13 +35,12 @@ const PassengerInfo = ({
   setFormData,
   formData,
 }: Props) => {
-  const [showSummary, setShowSummary] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [createBooking] = useCreateBookingsMutation({});
+  const totalPrice = formData?.vehicle?.calculation?.total_price || 0;
   const router = useRouter();
-  const [createBooking] = useCreateBookingsMutation({}); // হুক যোগ করুন
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Handle input changes
-  const handleChange = (
+ const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
@@ -55,8 +55,7 @@ const PassengerInfo = ({
     }));
   };
 
-  // Load user data from localStorage if logged in
-  useEffect(() => {
+   useEffect(() => {
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
@@ -88,8 +87,8 @@ const PassengerInfo = ({
     }
   }, [setFormData]);
 
-  // Validate passenger info
-  const validatePassengerInfo = () => {
+  
+   const validatePassengerInfo = () => {
     const currentInfo = formData?.passengerInfo || passengerInfo;
     const { fullName, email, phone } = currentInfo;
 
@@ -112,7 +111,7 @@ const PassengerInfo = ({
     return true;
   };
 
-  // বুকিং তৈরির ফাংশন
+
   const buildPayload = (includeVehicleId = false) => {
     const pickupDateTime = formData.pickupDate
       ? `${formData.pickupDate.getFullYear()}-${String(
@@ -141,7 +140,7 @@ const PassengerInfo = ({
       bags: totalLuggage || 0,
       hours: totalHours,
       ...(includeVehicleId && {
-        vehicle_id: formData.vehicle?.id,
+        vehicle_class_id: formData.vehicle?.vehicle_class_id,
       }),
       // প্যাসেঞ্জার ইনফো যোগ করুন
       name: passengerInfoData.fullName || "",
@@ -155,85 +154,44 @@ const PassengerInfo = ({
     };
   };
 
-  // Handle show summary - এখানে বুকিং API কল হবে
-  const handleShowSummary = async () => {
-    try {
-      // Validate passenger info
-      if (!validatePassengerInfo()) {
-        return;
-      }
+  
 
-      // Validate vehicle selection
-      if (!formData.vehicle) {
-        toast.error("Please select a vehicle first");
+  const handleSeePriceQuote = async () => {
+    try {
+      if (!validatePassengerInfo()) {
         return;
       }
 
       setIsLoading(true);
 
-      // বুকিং API কল করুন
       const payload = buildPayload(true);
-      const res = await createBooking(payload).unwrap();
-      
-      // বুকিং আইডি সেভ করুন
-      if (res?.data?.id) {
-        setFormData((prev: any) => ({ 
-          ...prev, 
-          bookingId: res.data.id 
-        }));
-      }
+      // console.log("Sending payload to API:", payload);
+      // return;
 
-      toast.success("Booking created successfully!");
-      setShowSummary(true);
-      setIsLoading(false);
-    } catch (err: any) {
-      console.error("Error creating booking:", err);
-      
-      let errorMessage = "Failed to create booking. Please try again.";
-      
-      if (err?.data?.message) {
-        errorMessage = err.data.message;
-      } else if (err?.data?.errors?.[0]?.msg) {
-        errorMessage = err.data.errors[0].msg;
-      } else if (err?.message) {
-        errorMessage = err.message;
-      }
-      
-      if (errorMessage.includes("not available")) {
-        errorMessage = "Selected vehicle is not available for the requested time. Please choose another vehicle.";
-      }
-      
-      toast.error(errorMessage);
+      const res = await createBooking(payload).unwrap();
+
+      const bookingId = res?.data?.id;
+      const bookingToken = res?.booking_access_token;
+      const customerId = res?.data?.customer_id;
+
+      const updatedFormData = {
+        ...formData,
+        booking_id: bookingId,
+        booking_access_token: bookingToken,
+        customer_id: customerId,
+      };
+
+      setQuoteData(updatedFormData);
+      setFormData(updatedFormData);
+
+      router.push("/manage-reservation?from=book-a-ride");
+    } catch (error) {
+      toast.error("Failed to fetch price quote. Please try again.");
+      console.error("Booking failed:", error);
+    } finally {
       setIsLoading(false);
     }
   };
-
-  // If showSummary is true, render BookingSummary
-  if (showSummary) {
-    return (
-      <div className="max-w-6xl mx-auto p-4">
-        <BackButton onClick={() => setShowSummary(false)} text="Back to passenger details" />
-        <div className="mt-4">
-          <BookingSummary
-            vehicleName={formData?.vehicle?.name || "Vehicle"}
-            pickup={formData?.pickup_address}
-            dropoff={formData?.dropoff_address}
-            date={formData?.pickupDate?.toLocaleDateString()}
-            time={formData?.pickupTime}
-            passengers={(formData.passengers?.passengers || 0) + (formData.passengers?.child_seats || 0)}
-            bags={formData?.passengers?.bags}
-            bookingId={formData?.bookingId}
-            onConfirm={() => {
-              router.push("/");
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // Get current passenger info for display
-  const currentInfo = formData?.passengerInfo || passengerInfo;
 
   return (
     <div>
@@ -257,6 +215,9 @@ const PassengerInfo = ({
             <h3 className="font-bold mb-1 text-lg md:text-2xl">
               Contact person
             </h3>
+            {/* <span className="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full">
+            Step 3 of 4
+          </span> */}
           </div>
 
           {/* Contact person */}
@@ -270,7 +231,7 @@ const PassengerInfo = ({
                 <Label text="Full Name" className="font-bold" required={true} />
                 <Input
                   name="fullName"
-                  value={currentInfo.fullName || ""}
+                  value={passengerInfo.fullName}
                   onChange={handleChange}
                   placeholder="Enter full name"
                   type="text"
@@ -285,9 +246,9 @@ const PassengerInfo = ({
                   required={true}
                 />
                 <Input
-                  type="tel"
+                  type="number"
                   name="phone"
-                  value={currentInfo.phone || ""}
+                  value={passengerInfo.phone}
                   onChange={handleChange}
                   placeholder="Enter phone number"
                   className="w-full mt-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black"
@@ -304,7 +265,7 @@ const PassengerInfo = ({
               <Input
                 type="email"
                 name="email"
-                value={currentInfo.email || ""}
+                value={passengerInfo.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
                 className="w-full mt-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black"
@@ -328,7 +289,7 @@ const PassengerInfo = ({
                 <Input
                   type="text"
                   name="flightNumber"
-                  value={currentInfo.flightNumber || ""}
+                  value={passengerInfo.flightNumber}
                   onChange={handleChange}
                   placeholder="e.g. AA1234"
                   className="w-full mt-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black"
@@ -344,7 +305,7 @@ const PassengerInfo = ({
                 <Input
                   type="text"
                   name="airline"
-                  value={currentInfo.airline || ""}
+                  value={passengerInfo.airline}
                   onChange={handleChange}
                   placeholder="e.g. American Airlines"
                   className="w-full mt-1 rounded-md border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-black"
@@ -356,7 +317,7 @@ const PassengerInfo = ({
             <div className="flex items-start gap-2 mb-4">
               <input
                 name="childSeat"
-                checked={currentInfo.childSeat || false}
+                checked={passengerInfo.childSeat}
                 onChange={handleChange}
                 type="checkbox"
                 className="mt-1"
@@ -381,7 +342,7 @@ const PassengerInfo = ({
               />
               <Textarea
                 name="instructions"
-                value={currentInfo.instructions || ""}
+                value={passengerInfo.instructions}
                 onChange={handleChange}
                 rows={3}
                 placeholder="Add notes for your driver (gate number, meeting point, language preference...)"
@@ -390,8 +351,21 @@ const PassengerInfo = ({
             </div>
           </div>
 
+          <div className="flex justify-between items-center gap-6">
+            <div>
+              <DistanceDisplay
+                distance={formData.distance}
+                duration={formData.duration}
+              />
+            </div>
+
+            <div className="rounded-lg border bg-gray-50 px-4 py-3">
+              <p>Total Price: ${totalPrice.toFixed(2)}</p>
+            </div>
+          </div>
+
           {/* Footer */}
-          <div className="hidden md:block">
+          <div className=" hidden md:block">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-xs text-gray-400 md:max-w-2/3">
                 You can review all trip details on the next step before
@@ -399,12 +373,12 @@ const PassengerInfo = ({
               </p>
 
               <Button
-                onClick={handleShowSummary}
+                onClick={handleSeePriceQuote}
                 disabled={isLoading}
                 size={"sm"}
                 className="cursor-pointer py-2 mt-4 md:mt-0 font-medium flex items-center gap-2"
               >
-                {isLoading ? "Creating Booking..." : "Show Summary →"}
+                {isLoading ? "Loading..." : "Continue to Payment →"}
               </Button>
             </div>
           </div>
@@ -420,11 +394,11 @@ const PassengerInfo = ({
 
       <div className="bg-white md:hidden py-2 flex justify-center">
         <Button
-          onClick={handleShowSummary}
+          onClick={handleSeePriceQuote}
           disabled={isLoading}
           className="cursor-pointer py-2 rounded-none mt-4 md:mt-0 font-medium flex items-center gap-2"
         >
-          {isLoading ? "Creating Booking..." : "Show Summary →"}
+          {isLoading ? "Loading..." : "Continue to Payment →"}
         </Button>
       </div>
     </div>

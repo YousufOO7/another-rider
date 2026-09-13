@@ -2,7 +2,7 @@
 // app/hooks/useDistanceCalculator.ts
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getDistanceData } from "../storage";
 
 export interface DistanceResult {
@@ -13,99 +13,119 @@ export interface DistanceResult {
   status: string;
 }
 
-interface DistanceMatrixResponse {
-  rows: Array<{
-    elements: Array<{
-      distance: { text: string; value: number };
-      duration: { text: string; value: number };
-      status: string;
-    }>;
-  }>;
-}
+/** Poll until Google Maps API is ready */
+const waitForGoogleMaps = (): Promise<any> => {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(null);
+    const g = (window as any).google;
+    if (g?.maps?.DirectionsService) return resolve(g);
+
+    let tries = 0;
+    const MAX_TRIES = 100; // ~10s
+    const interval = setInterval(() => {
+      tries++;
+      const gg = (window as any).google;
+      if (gg?.maps?.DirectionsService) {
+        clearInterval(interval);
+        resolve(gg);
+      } else if (tries >= MAX_TRIES) {
+        clearInterval(interval);
+        resolve(null);
+      }
+    }, 100);
+  });
+};
 
 export const useDistanceCalculator = (savedDistance?: DistanceResult) => {
-  // Try to load previous distance from sessionStorage if no initialDistance
   const [distance, setDistance] = useState<DistanceResult | null>(() => {
     if (savedDistance) return savedDistance;
-   const savedDistance2 = getDistanceData();
-   return savedDistance2 || null;
+    const savedDistance2 = getDistanceData();
+    return savedDistance2 || null;
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
 
-  // Check if Google Maps API is loaded
+  const requestIdRef = useRef(0);
+
   useEffect(() => {
-    const checkApiLoaded = () => {
-      if (typeof window !== "undefined" && (window as any).google?.maps) {
-        setIsApiLoaded(true);
-      }
+    let cancelled = false;
+    waitForGoogleMaps().then((g) => {
+      if (!cancelled) setIsApiLoaded(!!g);
+    });
+    return () => {
+      cancelled = true;
     };
-
-    checkApiLoaded();
-    window.addEventListener("load", checkApiLoaded);
-
-    return () => window.removeEventListener("load", checkApiLoaded);
   }, []);
 
-  // Save distance to sessionStorage whenever it updates
   useEffect(() => {
     if (distance) {
-      sessionStorage.setItem("distance", JSON.stringify(distance));
+      try {
+        sessionStorage.setItem("distance", JSON.stringify(distance));
+      } catch {}
     }
   }, [distance]);
 
   const calculateDistance = useCallback(
-    async (origin: string, destination: string) => {
+    async (origin: string, destination: string): Promise<DistanceResult | null> => {
       if (!origin || !destination) {
         setDistance(null);
-        return;
+        return null;
       }
 
-      if (!isApiLoaded) {
+      let google = (window as any).google;
+      if (!google?.maps?.DirectionsService) {
+        google = await waitForGoogleMaps();
+      }
+      if (!google?.maps?.DirectionsService) {
         setError("Google Maps API not loaded");
-        return;
+        return null;
       }
+      if (!isApiLoaded) setIsApiLoaded(true);
 
+      const myRequestId = ++requestIdRef.current;
       setLoading(true);
       setError(null);
 
       try {
-        const google = (window as any).google;
-        const service = new google.maps.DistanceMatrixService();
+        const directionsService = new google.maps.DirectionsService();
 
-        service.getDistanceMatrix(
-          {
-            origins: [origin],
-            destinations: [destination],
-            travelMode: google.maps.TravelMode.DRIVING,
-            unitSystem: google.maps.UnitSystem.METRIC,
-          },
-          (response: DistanceMatrixResponse, status: string) => {
-            setLoading(false);
+        const response = await directionsService.route({
+          origin,
+          destination,
+          travelMode: google.maps.TravelMode.DRIVING,
+        });
 
-            if (status === "OK" && response?.rows[0]?.elements[0]?.status === "OK") {
-              const element = response.rows[0].elements[0];
-              const result: DistanceResult = {
-                distance: element.distance.text,
-                distanceValue: element.distance.value,
-                duration: element.duration.text,
-                durationValue: element.duration.value,
-                status: element.status,
-              };
-              setDistance(result);
-            } else {
-              console.error("DistanceMatrix failed", response?.rows[0]?.elements[0]?.status);
-              setError("Could not calculate distance");
-              setDistance(null);
-            }
-          }
-        );
-      } catch (err) {
-        setLoading(false);
+        // ignore stale responses
+        if (myRequestId !== requestIdRef.current) return null;
+
+        if (!response?.routes?.length) {
+          setError("No route found");
+          setDistance(null);
+          return null;
+        }
+
+        const leg = response.routes[0].legs[0];
+
+        const result: DistanceResult = {
+          distance: leg.distance?.text ?? "",
+          distanceValue: leg.distance?.value ?? 0,
+          duration: leg.duration?.text ?? "",
+          durationValue: leg.duration?.value ?? 0,
+          status: "OK",
+        };
+
+        setDistance(result);
+        return result;
+      } catch (err: any) {
+        console.error("[Distance] exception:", err);
+        // Directions API returns status in err or in the response
         setError("Error calculating distance");
         setDistance(null);
+        return null;
+      } finally {
+        if (myRequestId === requestIdRef.current) setLoading(false);
       }
     },
     [isApiLoaded]

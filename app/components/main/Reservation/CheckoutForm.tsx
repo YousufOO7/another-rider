@@ -3,7 +3,6 @@
 
 import { getQuoteData } from "@/app/utils/storage";
 import {
-  CardElement,
   useStripe,
   useElements,
   CardNumberElement,
