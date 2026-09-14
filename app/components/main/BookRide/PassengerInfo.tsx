@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useCreateBookingsMutation } from "@/app/redux/features/bookings/bookingsApi";
 import BackButton from "@/app/utils/common/BackButton";
 import Label from "@/app/utils/common/Label";
 import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
@@ -35,12 +35,11 @@ const PassengerInfo = ({
   setFormData,
   formData,
 }: Props) => {
-  const [createBooking] = useCreateBookingsMutation({});
   const totalPrice = formData?.vehicle?.calculation?.total_price || 0;
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
- const handleChange = (
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
@@ -55,7 +54,7 @@ const PassengerInfo = ({
     }));
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
@@ -63,10 +62,11 @@ const PassengerInfo = ({
         const parsedUser = JSON.parse(storedUser);
 
         setFormData((prev: any) => {
-          const hasUserData = prev?.passengerInfo?.fullName && 
-                             prev?.passengerInfo?.email && 
-                             prev?.passengerInfo?.phone;
-          
+          const hasUserData =
+            prev?.passengerInfo?.fullName &&
+            prev?.passengerInfo?.email &&
+            prev?.passengerInfo?.phone;
+
           if (hasUserData) {
             return prev;
           }
@@ -87,8 +87,7 @@ const PassengerInfo = ({
     }
   }, [setFormData]);
 
-  
-   const validatePassengerInfo = () => {
+  const validatePassengerInfo = () => {
     const currentInfo = formData?.passengerInfo || passengerInfo;
     const { fullName, email, phone } = currentInfo;
 
@@ -111,74 +110,14 @@ const PassengerInfo = ({
     return true;
   };
 
-
-  const buildPayload = (includeVehicleId = false) => {
-    const pickupDateTime = formData.pickupDate
-      ? `${formData.pickupDate.getFullYear()}-${String(
-          formData.pickupDate.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-          formData.pickupDate.getDate()
-        ).padStart(2, "0")} ${formData.pickupTime}`
-      : null;
-
-    const totalHours =
-      Number(formData.hours || 0) +
-      Number(formData.minutes || 0) / 60;
-
-    // প্যাসেঞ্জার ইনফো যোগ করুন
-    const passengerInfoData = formData?.passengerInfo || {};
-    const totalLuggage = formData.passengers?.bags || 0;  
-
-    return {
-      service_type: formData.mode,
-      pickup_time: pickupDateTime,
-      pickup_address: formData.pickup_address,
-      dropoff_address: formData.dropoff_address,
-      passengers: formData.passengers?.passengers || 0,
-      distance_km: formData.distanceValue / 1000,
-      child_seats: formData.passengers.child_seats || 0,
-      bags: totalLuggage || 0,
-      hours: totalHours,
-      ...(includeVehicleId && {
-        vehicle_class_id: formData.vehicle?.vehicle_class_id,
-      }),
-      // প্যাসেঞ্জার ইনফো যোগ করুন
-      name: passengerInfoData.fullName || "",
-      email: passengerInfoData.email || "",
-      phone: passengerInfoData.phone || "",
-      customer_id: passengerInfoData.id || null,
-      flight_number: passengerInfoData.flightNumber || "",
-      airlines: passengerInfoData.airline || "",
-      notes: passengerInfoData.instructions || "",
-      child_seat_requested: passengerInfoData.childSeat || false,
-    };
-  };
-
-  
-
   const handleSeePriceQuote = async () => {
     try {
       if (!validatePassengerInfo()) {
         return;
       }
 
-      setIsLoading(true);
-
-      const payload = buildPayload(true);
-      // console.log("Sending payload to API:", payload);
-      // return;
-
-      const res = await createBooking(payload).unwrap();
-
-      const bookingId = res?.data?.id;
-      const bookingToken = res?.booking_access_token;
-      const customerId = res?.data?.customer_id;
-
       const updatedFormData = {
         ...formData,
-        booking_id: bookingId,
-        booking_access_token: bookingToken,
-        customer_id: customerId,
       };
 
       setQuoteData(updatedFormData);
