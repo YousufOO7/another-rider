@@ -189,7 +189,7 @@ const HourlyForm = ({
       setDraftStop(null);
     };
 
-  const handleSelectVehicle = () => {
+  const handleSelectVehicle = async () => {
   if (!formData?.hours || formData.hours <= 0) {
     toast.error("Please select number of hours");
     return;
@@ -208,6 +208,59 @@ const HourlyForm = ({
     toast.error("Please select number of passengers");
     return;
   }
+
+  const passengers = formData?.passengers?.passengers || 0;
+    const children = formData?.passengers?.child_seats || 0;
+    const bags = formData?.passengers?.bags || 0;
+    const total = passengers + children;
+  
+    if (total <= 0) {
+      toast.error("Please select at least 1 passenger");
+      return;
+    }
+  
+    let distanceKm = formData?.distance_km || 0;
+    let distanceValue = (formData as any)?.distanceValue || 0;
+  
+    // ✅ distance না থাকলে calculate
+    if (!distanceKm) {
+      try {
+        const result = await calculateDistance(
+          formData.pickup_address,
+          formData.dropoff_address
+        );
+  
+        distanceValue =
+          (result as any)?.distanceValue ?? (distance as any)?.distanceValue;
+  
+        distanceKm = distanceValue
+          ? Number((distanceValue / 1000).toFixed(1))
+          : 0;
+  
+        if (!distanceKm) {
+          toast.error("Distance calculate করা যায়নি, আবার চেষ্টা করুন");
+          return;
+        }
+      } catch (err) {
+        console.error("Distance calc failed:", err);
+        toast.error("Distance calculate করা যায়নি");
+        return;
+      }
+    }
+  
+    // ✅ একবারেই সব set করুন
+    setFormData((prev: any) => ({
+      ...prev,
+      passengers: {
+        passengers: passengers + children,
+        child_seats: children,
+        bags: bags,
+      },
+      totalPassengers: total,
+      totalLuggage: bags,
+      distance_km: distanceKm,
+      distanceValue: distanceValue,
+    }));
 
   // ✅ Sob thik thakle
   onNext();

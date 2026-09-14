@@ -84,6 +84,7 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
   const taxesAmount = selectedVehicle?.calculation?.tax_amount || 0;
   const ratePrice = selectedVehicle?.calculation?.rate || 0;
   const kilometers = selectedVehicle?.calculation?.km || 0;
+  const totalHours  = selectedVehicle?.calculation?.hours || 0;
 
 
   const handleNext = async () => {
@@ -163,6 +164,18 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
                 {ratePrice ? `$${ratePrice.toFixed(2)}` : "$0.00"}
               </p>
             </div>
+            {
+              totalHours > 0 && (
+              <div>
+                  <p className="text-muted-foreground">Hourly Rate</p>
+                  <p className="font-medium">
+                    {totalHours ? `$${totalHours.toFixed(2)}` : "$0.00"}
+                  </p>
+                </div>
+              )
+
+            }
+            
             <div>
               <p className="text-muted-foreground">Kilometers</p>
               <p className="font-medium">
