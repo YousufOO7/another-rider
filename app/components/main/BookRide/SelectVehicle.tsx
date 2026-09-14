@@ -82,6 +82,8 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
   const basePrice = selectedVehicle?.calculation?.base_price || 0;
   const gratuityAmount = selectedVehicle?.calculation?.gratuity_amount || 0;
   const taxesAmount = selectedVehicle?.calculation?.tax_amount || 0;
+  const ratePrice = selectedVehicle?.calculation?.rate || 0;
+  const kilometers = selectedVehicle?.calculation?.km || 0;
 
 
   const handleNext = async () => {
@@ -153,6 +155,18 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
               <p className="text-muted-foreground">Gratuity</p>
               <p className="font-medium">
                 {gratuityAmount ? `$${gratuityAmount.toFixed(2)}` : "$0.00"}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Rate</p>
+              <p className="font-medium">
+                {ratePrice ? `$${ratePrice.toFixed(2)}` : "$0.00"}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Kilometers</p>
+              <p className="font-medium">
+                {kilometers ? `${kilometers.toFixed(2)} km` : "0.00 km"}
               </p>
             </div>
             <div className="text-right">
