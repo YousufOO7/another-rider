@@ -26,7 +26,7 @@ import { useCustomerLogoutMutation } from "@/app/redux/features/auth/authApi";
 const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
   const router = useRouter();
   console.log(onBookOnline);
-  const { platformName, isLoading, } = useAppConfig();
+  const { platformName, isLoading } = useAppConfig();
   const [token, setToken] = useState<string | null>(null);
   const [customerLogout] = useCustomerLogoutMutation();
 
@@ -35,14 +35,13 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
     setToken(t || null);
   }, []);
 
-
   const handleLogout = async () => {
-     const res = await customerLogout({}).unwrap();
-     console.log(res)
+    const res = await customerLogout({}).unwrap();
+    console.log(res);
     shareWithCookies("remove", `${appConfiguration.appCode}token`);
     localStorage.removeItem("user");
     setToken(null);
-    router.push("/auth/login"); 
+    router.push("/auth/login");
   };
 
   return (
@@ -66,7 +65,8 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
 
         {/* Heading */}
         <h2 className="text-2xl font-semibold mb-2">
-          Welcome to {isLoading ? <ButtonLoader /> : platformName} booking system
+          Welcome to {isLoading ? <ButtonLoader /> : platformName} booking
+          system
         </h2>
         <p className="text-sm text-gray-500 mb-6">
           Book your ride online in a minute!
@@ -86,7 +86,16 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
             Book Online
           </Button>
 
-          <Button className="rounded-md px-6 cursor-pointer">
+          <Button
+            className="rounded-md px-6 cursor-pointer"
+            onClick={() =>
+              window.open(
+                "https://form.squarelimo.com/form.html",
+                "_blank",
+                "noopener,noreferrer",
+              )
+            }
+          >
             Price Quote
           </Button>
           <Button
@@ -107,45 +116,45 @@ const HomeRedirect = ({ onBookOnline }: { onBookOnline: () => void }) => {
         <p className="text-sm text-gray-500 mb-3">Have an account with us?</p>
 
         <div className="flex justify-center">
-        {token ? (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="red"
-                size="sm"
-                className="cursor-pointer flex items-center gap-2"
-              >
-                <FiLogOut /> Logout
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to logout? You will need to login again
-                  to access your account.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="btn-destructive-fill cursor-pointer">
-                  Cancel
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  className="cursor-pointer"
-                  onClick={handleLogout}
+          {token ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="red"
+                  size="sm"
+                  className="cursor-pointer flex items-center gap-2"
                 >
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        ) : (
-          <Link href={"/auth/login"}>
-            <Button variant="default" size="sm" className="cursor-pointer">
-              Login
-            </Button>
-          </Link>
-        )}
+                  <FiLogOut /> Logout
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to logout? You will need to login
+                    again to access your account.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="btn-destructive-fill cursor-pointer">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="cursor-pointer"
+                    onClick={handleLogout}
+                  >
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : (
+            <Link href={"/auth/login"}>
+              <Button variant="default" size="sm" className="cursor-pointer">
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </div>
