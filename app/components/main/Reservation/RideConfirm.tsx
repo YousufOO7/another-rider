@@ -1,8 +1,17 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Briefcase, Calendar, Car, ChevronRight, Clock, MapPin, Users } from "lucide-react";
+import {
+  Briefcase,
+  Calendar,
+  Car,
+  ChevronRight,
+  Clock,
+  MapPin,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { clearQuoteData } from "@/app/utils/storage";
 import { useRouter } from "next/navigation";
@@ -23,15 +32,14 @@ interface RideConfirmProps {
 }
 
 const RideConfirm = ({ rideData }: RideConfirmProps) => {
-
-     useEffect(() => {
+  useEffect(() => {
     // Confirmation page এ আসলেই clear হবে
     clearQuoteData();
   }, []);
 
-     const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
 
-       useEffect(() => {
+  useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -53,8 +61,6 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
     vehicle,
     booking_id,
   } = rideData;
-
-
 
   // Build full itinerary: pickup → extra stops → dropoff
   // const itinerary: Stop[] = [
@@ -82,11 +88,10 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
 
   // Default vehicle if none
   const vehicleName = vehicle?.name || "N/A";
+  const vehicleImage = vehicle?.image || "img.freepik.com";
   const maxPassengers = passengers?.passengers || 0;
   const maxBags = passengers?.bags || 0;
   const bookingId = booking_id;
-  
-
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden h-full flex flex-col">
@@ -106,7 +111,7 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
           </div>
           <div className="bg-white/20 px-3 py-1.5 rounded-full">
             <span className="text-white text-xs font-semibold">
-             Booking ID #{bookingId || "BK-2026"}
+              Booking ID #{bookingId || "BK-2026"}
             </span>
           </div>
         </div>
@@ -117,8 +122,13 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
         {/* Vehicle Card */}
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-blue-200 transition-all">
           <div className="flex items-center gap-4">
-            <div className="bg-blue-100 p-3 rounded-xl">
-              <Car className="h-6 w-6 text-blue-600" />
+            <div className=" rounded-xl">
+              {/* <Car className="h-6 w-6 text-blue-600" /> */}
+              <img
+                src={vehicleImage}
+                alt={vehicleName}
+                className="h-12 w-20 rounded-md object-cover "
+              />
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800 text-base">
@@ -237,20 +247,18 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
             <ChevronRight className="h-5 w-5 ml-1 group-hover:translate-x-0.5 transition-transform" />
           </Button>
 
-          {
-            !user && (
-              <Button
-            size="lg"
-            variant="outline"
-            className="w-full py-6 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-medium text-sm transition-all duration-200 cursor-pointer"
-            onClick={() => router.push("/auth/registration")}
-          >
-            <p className="text-sm font-bold text-center  mt-3">
-              Don&apos;t have account? Register
-            </p>
-          </Button>
-            )
-          }
+          {!user && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full py-6 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-medium text-sm transition-all duration-200 cursor-pointer"
+              onClick={() => router.push("/auth/registration")}
+            >
+              <p className="text-sm font-bold text-center  mt-3">
+                Don&apos;t have account? Register
+              </p>
+            </Button>
+          )}
 
           <div className="flex items-center justify-center gap-2 pt-2">
             <div className="flex -space-x-1">
