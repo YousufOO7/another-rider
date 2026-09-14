@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 
 "use client";
 import { FiBriefcase, FiUsers } from "react-icons/fi";
@@ -31,11 +32,11 @@ const VehicleCard = ({ vehicle, selected, onSelect }: Props) => {
     >
       {/* Vehicle name */}
       <div className="col-span-5 flex items-center gap-1 ">
-        {/* <img
+        <img
           src={vehicle?.image || "img.freepik.com"}
           alt={vehicle.name}
           className="h-12 w-20 rounded-md object-cover "
-        /> */}
+        />
         <p className="block md:hidden text-xs">{vehicle.name.slice(0, 8)}...</p>
 
         <p className="hidden md:block">{vehicle.name}</p>

@@ -79,8 +79,9 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
   const totalPassengers = formData.totalPassengers || 0;
   const totalLuggage = formData.totalLuggage || 0;
   const selectedVehicle = formData?.vehicle;
-  const basePrice = selectedVehicle?.calculation?.rate || 0;
-  const taxesAmount = selectedVehicle?.calculation?.km || 0;
+  const basePrice = selectedVehicle?.calculation?.base_price || 0;
+  const gratuityAmount = selectedVehicle?.calculation?.gratuity_amount || 0;
+  const taxesAmount = selectedVehicle?.calculation?.tax_amount || 0;
 
 
   const handleNext = async () => {
@@ -137,15 +138,21 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
 
         <div className="border py-5 p-2 md:p-6 flex flex-col md:flex-row justify-between">
            <div>
-              <p className="text-muted-foreground">Rate</p>
+              <p className="text-muted-foreground">Base Price</p>
               <p className="font-medium">
                 {basePrice ? `$${basePrice.toFixed(2)}` : "$0.00"}
               </p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Per KM</p>
+             <div>
+              <p className="text-muted-foreground">Taxes & fees</p>
               <p className="font-medium">
                 {taxesAmount ? `$${taxesAmount.toFixed(2)}` : "$0.00"}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Gratuity</p>
+              <p className="font-medium">
+                {gratuityAmount ? `$${gratuityAmount.toFixed(2)}` : "$0.00"}
               </p>
             </div>
             <div className="text-right">
