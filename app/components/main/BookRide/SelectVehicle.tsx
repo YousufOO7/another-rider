@@ -78,6 +78,9 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
 
   const totalPassengers = formData.totalPassengers || 0;
   const totalLuggage = formData.totalLuggage || 0;
+  const selectedVehicle = formData?.vehicle;
+  const basePrice = selectedVehicle?.calculation?.rate || 0;
+  const taxesAmount = selectedVehicle?.calculation?.km || 0;
 
 
   const handleNext = async () => {
@@ -132,22 +135,18 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
           ))}
         </div>
 
-        {/* <div className="border py-5 p-2 md:p-6 flex flex-col md:flex-row justify-between">
+        <div className="border py-5 p-2 md:p-6 flex flex-col md:flex-row justify-between">
            <div>
-              <p className="text-muted-foreground">Base fare</p>
+              <p className="text-muted-foreground">Rate</p>
               <p className="font-medium">
                 {basePrice ? `$${basePrice.toFixed(2)}` : "$0.00"}
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Taxes & fees</p>
+              <p className="text-muted-foreground">Per KM</p>
               <p className="font-medium">
                 {taxesAmount ? `$${taxesAmount.toFixed(2)}` : "$0.00"}
               </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Gratuity</p>
-              <p className="font-medium">{gratuityAmount ? `$${gratuityAmount.toFixed(2)}` : "$0.00"}</p>
             </div>
             <div className="text-right">
             <p className="text-muted-foreground">TOTAL PAID</p>
@@ -158,7 +157,7 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
                 .toFixed(2)}`}
             </p>
           </div>
-        </div> */}
+        </div>
 
         {/* Next button */}
         <div className="flex justify-end  pb-5 p-2 md:p-6">

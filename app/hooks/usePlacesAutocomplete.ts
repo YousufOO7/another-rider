@@ -65,118 +65,114 @@ export const usePlacesAutocomplete = (
    * Initialize Google Places Autocomplete
    */
   useEffect(() => {
-    const google = (window as any).google;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    let removeListener: (() => void) | undefined;
 
-    /*
-     * Make sure:
-     * 1. Google Maps is loaded
-     * 2. Places library is loaded
-     * 3. Input exists
-     */
-    if (
-      !google?.maps?.places ||
-      !inputRef.current
-    ) {
-      return;
-    }
+    const initialize = () => {
+      const google = (window as any).google;
 
-    /*
-     * Prevent creating autocomplete more than once.
-     */
-    if (autocompleteRef.current) {
-      return;
-    }
+      /*
+       * Make sure:
+       * 1. Google Maps is loaded
+       * 2. Places library is loaded
+       * 3. Input exists
+       */
+      if (
+        !google?.maps?.places?.Autocomplete ||
+        !inputRef.current
+      ) {
+        // The Maps script loads after hydration; extra-stop inputs also mount later.
+        retryTimer = setTimeout(initialize, 100);
+        return;
+      }
 
-    /*
-     * IMPORTANT:
-     *
-     * DO NOT use:
-     *
-     * types: ["geocode"]
-     *
-     * because that mainly targets geographic/address
-     * results and can prevent hotels/businesses/POIs
-     * from appearing properly.
-     *
-     * Leaving types unrestricted allows:
-     *
-     * - Hotels
-     * - Airports
-     * - Restaurants
-     * - Businesses
-     * - Landmarks
-     * - Buildings
-     * - Street addresses
-     * - Other Google Places
-     */
-    const autocomplete =
-      new google.maps.places.Autocomplete(
-        inputRef.current,
-        {
-          fields: [
-            "place_id",
-            "name",
-            "formatted_address",
-            "geometry",
-            "types",
-          ],
+      /*
+       * Prevent creating autocomplete more than once.
+       */
+      if (autocompleteRef.current) {
+        return;
+      }
+
+      /*
+       * IMPORTANT:
+       *
+       * DO NOT use:
+       *
+       * types: ["geocode"]
+       *
+       * because that mainly targets geographic/address
+       * results and can prevent hotels/businesses/POIs
+       * from appearing properly.
+       *
+       * Leaving types unrestricted allows:
+       *
+       * - Hotels
+       * - Airports
+       * - Restaurants
+       * - Businesses
+       * - Landmarks
+       * - Buildings
+       * - Street addresses
+       * - Other Google Places
+       */
+      const autocomplete =
+        new google.maps.places.Autocomplete(
+          inputRef.current,
+          {
+            fields: [
+              "place_id",
+              "name",
+              "formatted_address",
+              "geometry",
+              "types",
+            ],
+          }
+        );
+
+      autocompleteRef.current = autocomplete;
+
+      /*
+       * Fired when user selects one of Google's suggestions.
+       */
+      const listener = autocomplete.addListener(
+        "place_changed",
+        () => {
+          const place = autocomplete.getPlace();
+
+          if (!place) {
+            return;
+          }
+
+          const name = place.name?.trim() || "";
+          const address = place.formatted_address?.trim() || "";
+          const isNamedPlace = place.types?.some((type: string) =>
+            ["establishment", "point_of_interest", "lodging"].includes(type)
+          );
+
+          // Keep hotel/business names while retaining the address for routing.
+          // Street results already have a complete label in formatted_address.
+          const addressIncludesName =
+            address.toLocaleLowerCase() === name.toLocaleLowerCase() ||
+            address.toLocaleLowerCase().startsWith(`${name.toLocaleLowerCase()},`);
+          const label =
+            isNamedPlace && name && address && !addressIncludesName
+              ? `${name}, ${address}`
+              : address || name;
+
+          if (label) {
+            onSelectRef.current(label);
+          }
         }
       );
 
-    autocompleteRef.current = autocomplete;
+      removeListener = () => google.maps.event.removeListener(listener);
+    };
 
-    /*
-     * Fired when user selects one of Google's suggestions.
-     */
-    const listener = autocomplete.addListener(
-      "place_changed",
-      () => {
-        const place = autocomplete.getPlace();
+    initialize();
 
-        /*
-         * Useful while testing.
-         *
-         * Open browser console and you will see
-         * everything Google returned.
-         */
-        console.log("Google place selected:", place);
-
-        if (!place) {
-          return;
-        }
-
-        /*
-         * Prefer Google's formatted address.
-         *
-         * Example:
-         *
-         * 1535 Broadway, New York, NY 10036, USA
-         */
-        if (place.formatted_address) {
-          onSelectRef.current(
-            place.formatted_address
-          );
-
-          return;
-        }
-
-        /*
-         * Fallback if formatted_address isn't available.
-         */
-        if (place.name) {
-          onSelectRef.current(place.name);
-        }
-      }
-    );
-
-    /*
-     * Cleanup when component unmounts.
-     */
     return () => {
-      if (listener) {
-        google.maps.event.removeListener(listener);
-      }
-
+      clearTimeout(retryTimer);
+      removeListener?.();
       autocompleteRef.current = null;
     };
   }, []);

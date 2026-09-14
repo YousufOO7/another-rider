@@ -233,7 +233,7 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
             className="w-full bg-linear-to-r from-black to-black hover:from-black hover:to-black text-white text-base font-semibold py-6 hover:shadow-xl transition-all duration-200 cursor-pointer group"
             onClick={() => router.push("/")}
           >
-            <span>Pay  Later at Trip End</span>
+            <span>Confirm Reservation</span>
             <ChevronRight className="h-5 w-5 ml-1 group-hover:translate-x-0.5 transition-transform" />
           </Button>
 
