@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/preserve-manual-memoization */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -7,8 +7,7 @@ import PickupAndDropOff from "@/app/utils/helper/PickupAndDropOff";
 import { Button } from "@/components/ui/button";
 import { FiPlus, FiMinus, FiMapPin, FiClock } from "react-icons/fi";
 import HourlyForm from "./HourlyForm";
-import Link from "next/link";
-import { getDistanceData, setQuoteData } from "@/app/utils/storage";
+import { getDistanceData } from "@/app/utils/storage";
 import { useCallback, useEffect, useState } from "react";
 import { usePlacesAutocomplete } from "@/app/hooks/usePlacesAutocomplete";
 import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
@@ -42,7 +41,6 @@ const WhereAndWhen = ({
   setFormData,
   pickupDate,
   pickupTime,
-   onShowPriceWhereAndWhen,
 }: Props) => {
 
   //  const totalPassengers = (passengers?.passengers || 0) + (passengers?.child_seats || 0);
