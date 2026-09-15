@@ -145,6 +145,7 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
         airlines: passengerInfoData.airline || "",
         notes: passengerInfoData.instructions || "",
         child_seat_requested: passengerInfoData.childSeat || false,
+        airport_id: storedData.airport_id || null,
         stops: (storedData.extraStops || []).map((stop: any) => ({
     address: stop.location,
   })),

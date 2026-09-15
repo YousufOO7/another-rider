@@ -48,6 +48,15 @@ export const vehicleClassesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["vehicle-classes"],
     }),
+
+    //airport
+    getAllAirports: builder.query({
+      query: () => ({
+        url: "/airports",
+        method: "GET",
+      }),
+      providesTags: ["airports"],
+    }),
   }),
 });
 
@@ -56,5 +65,6 @@ export const {
     useCreateVehicleClassMutation,
     useDeleteVehicleClassByIdMutation,
     useGetAllVehicleClassQuery,
-    useUpdateVehicleClassMutation
+    useUpdateVehicleClassMutation,
+    useGetAllAirportsQuery,
 } = vehicleClassesApi;

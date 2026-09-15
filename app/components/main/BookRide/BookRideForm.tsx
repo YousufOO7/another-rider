@@ -21,6 +21,7 @@ const BookRideForm = () => {
     mode: "point_to_point",
     pickupDate: now,
     pickupTime: defaultTime,
+    airport_id: null as string | number | null,
     pickup_address: "",
     dropoff_address: "",
     passengers: {
@@ -71,6 +72,7 @@ useEffect(() => {
         child_seats: storedData.passengers?.child_seats ?? prev.passengers.child_seats,
         bags: storedData.passengers?.bags ?? prev.passengers.bags,
       },
+      airport_id: storedData.airport_id ?? prev.airport_id ?? null,
       pickupDate: storedData.pickupDate ? new Date(storedData.pickupDate) : prev.pickupDate,
     }));
   }

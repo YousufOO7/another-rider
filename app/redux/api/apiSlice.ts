@@ -30,6 +30,7 @@ export const apiSlice = createApi({
     "dashboard-summary",
     "company",
     "affiliates",
-    "customer"
+    "customer",
+    "airports",
   ],
 });

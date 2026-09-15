@@ -9,6 +9,8 @@ import { usePlacesAutocomplete } from "@/app/hooks/usePlacesAutocomplete";
 import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
 import { useDistanceCalculator } from "@/app/utils/helper/useDistanceCalculator";
 import toast from "react-hot-toast";
+import { useGetAllAirportsQuery } from "@/app/redux/features/vehicleClass/vehicleClassesApi";
+import AirportPickupAndDropOff from "@/app/utils/helper/AirportPickupAndDropOff";
 
 const Counter = ({
   label,
@@ -55,17 +57,10 @@ const AirportForm = ({
     location: string;
   } | null>(null);
 
-  // helper function to add stop to parent state
-  // const addExtraStop = (stop: {
-  //   type: "pickup" | "dropoff";
-  //   location: string;
-  // }) => {
-  //   setFormData((prev: any) => ({
-  //     ...prev,
-  //     extraStops: [...(prev.extraStops || []), stop],
-  //   }));
-  //   setDraftStop(null);
-  // };
+   const { data: airportsData } = useGetAllAirportsQuery({});
+  const airports = airportsData?.data || [];
+
+
 
   const handleSeePriceQuote = () => {
     setQuoteData(formData);
@@ -187,11 +182,9 @@ const AirportForm = ({
       setDraftStop(null);
     };
 
+    // console.log("airport", airports);
+
   const handleSelectVehicle = async () => {
-  if (!formData?.hours || formData.hours <= 0) {
-    toast.error("Please select number of hours");
-    return;
-  }
   if (!formData?.pickup_address) {
     toast.error("Pickup address is required");
     return;
@@ -216,6 +209,12 @@ const AirportForm = ({
       toast.error("Please select at least 1 passenger");
       return;
     }
+
+      // ✅ airport_id validation (backend চাচ্ছে)
+  if (!formData?.airport_id) {
+    toast.error("Please select an airport from the dropdown");
+    return;
+  }
   
     let distanceKm = formData?.distance_km || 0;
     let distanceValue = (formData as any)?.distanceValue || 0;
@@ -258,6 +257,7 @@ const AirportForm = ({
       totalLuggage: bags,
       distance_km: distanceKm,
       distanceValue: distanceValue,
+      airport_id: formData?.airport_id,
     }));
 
   // ✅ Sob thik thakle
@@ -285,8 +285,9 @@ const AirportForm = ({
 
       {/* Pickup & Dropoff */}
       <div>
-        <PickupAndDropOff
+        <AirportPickupAndDropOff
           extraStops={extraStops}
+          airports={airports}
           pickup_address={formData.pickup_address}
           dropoff_address={formData.dropoff_address}
           setExtraStops={(stops) =>
@@ -298,6 +299,81 @@ const AirportForm = ({
                   : stops,
             }))
           }
+
+           // ✅ Pickup এ airport select
+  onPickupAirportSelect={(airport) =>
+    setFormData((p: any) => {
+      const pickupId = airport?.id ?? null;
+      const dropoffId = p.dropoff_airport_id ?? null;
+      return {
+        ...p,
+        pickup_airport_id: pickupId,
+        pickup_airport_name: airport?.name ?? null,
+        pickup_airport_code: airport?.code ?? null,
+        // ✅ backend key — যেকোনো একটা select হলেই set
+        airport_id: pickupId ?? dropoffId ?? null,
+        airport_name:
+          airport?.name ?? p.dropoff_airport_name ?? null,
+        airport_code:
+          airport?.code ?? p.dropoff_airport_code ?? null,
+      };
+    })
+  }
+
+  // ✅ Dropoff এ airport select
+  onDropoffAirportSelect={(airport) =>
+    setFormData((p: any) => {
+      const pickupId = p.pickup_airport_id ?? null;
+      const dropoffId = airport?.id ?? null;
+      return {
+        ...p,
+        dropoff_airport_id: dropoffId,
+        dropoff_airport_name: airport?.name ?? null,
+        dropoff_airport_code: airport?.code ?? null,
+        // ✅ backend key
+        airport_id: dropoffId ?? pickupId ?? null,
+        airport_name:
+          airport?.name ?? p.pickup_airport_name ?? null,
+        airport_code:
+          airport?.code ?? p.pickup_airport_code ?? null,
+      };
+    })
+  }
+
+  // ✅ Pickup এ manual type → pickup airport clear
+  onPickupManualChange={() =>
+    setFormData((p: any) => {
+      const dropoffId = p.dropoff_airport_id ?? null;
+      return {
+        ...p,
+        pickup_airport_id: null,
+        pickup_airport_name: null,
+        pickup_airport_code: null,
+        // ✅ অন্যদিকের airport_id থাকলে সেটাই backend key হবে
+        airport_id: dropoffId,
+        airport_name: dropoffId ? p.dropoff_airport_name : null,
+        airport_code: dropoffId ? p.dropoff_airport_code : null,
+      };
+    })
+  }
+
+  // ✅ Dropoff এ manual type → dropoff airport clear
+  onDropoffManualChange={() =>
+    setFormData((p: any) => {
+      const pickupId = p.pickup_airport_id ?? null;
+      return {
+        ...p,
+        dropoff_airport_id: null,
+        dropoff_airport_name: null,
+        dropoff_airport_code: null,
+        // ✅ অন্যদিকের airport_id থাকলে সেটাই backend key হবে
+        airport_id: pickupId,
+        airport_name: pickupId ? p.pickup_airport_name : null,
+        airport_code: pickupId ? p.pickup_airport_code : null,
+      };
+    })
+  }
+
           onPickupChange={(v) =>
             setFormData((p: any) => ({ ...p, pickup_address: v }))
           }

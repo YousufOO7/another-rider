@@ -41,7 +41,9 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
       dropoff_address: formData.dropoff_address,
       passengers: formData.passengers.passengers,
       distance_km: formData.distanceValue / 1000,
-      child_seats: formData.passengers.kids || 0,
+      child_seats: formData.passengers.child_seats || 0,
+      airport_id: formData.airport_id || null,
+      bags: formData.passengers.bags || 0,
       hours: totalHours,
       stops: (formData.extraStops || []).map((stop: any) => ({
       address: stop.location,
