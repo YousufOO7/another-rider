@@ -5,7 +5,14 @@
 import DateTimePicker from "@/app/utils/helper/DateTimePicker";
 import PickupAndDropOff from "@/app/utils/helper/PickupAndDropOff";
 import { Button } from "@/components/ui/button";
-import { FiPlus, FiMinus, FiMapPin, FiClock } from "react-icons/fi";
+import { FiPlus, FiMinus, FiMapPin, FiClock, FiSend } from "react-icons/fi";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import HourlyForm from "./HourlyForm";
 import { getDistanceData } from "@/app/utils/storage";
 import { useCallback, useEffect, useState } from "react";
@@ -13,6 +20,7 @@ import { usePlacesAutocomplete } from "@/app/hooks/usePlacesAutocomplete";
 import DistanceDisplay from "@/app/utils/helper/DistanceDisplay";
 import { useDistanceCalculator } from "@/app/utils/helper/useDistanceCalculator";
 import toast from "react-hot-toast";
+import AirportForm from "./AirportForm";
 
 type PassengerKey = "passengers" | "child_seats" | "bags";
 
@@ -28,7 +36,7 @@ type Props = {
     child_seats: number;
     bags: number;
   };
-   onShowPriceWhereAndWhen?: () => void;
+  onShowPriceWhereAndWhen?: () => void;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
 };
 
@@ -42,10 +50,9 @@ const WhereAndWhen = ({
   pickupDate,
   pickupTime,
 }: Props) => {
-
   //  const totalPassengers = (passengers?.passengers || 0) + (passengers?.child_seats || 0);
   // const totalLuggage = passengers?.bags || 0;
-  
+
   // const updatePassenger = (key: PassengerKey, value: number) => {
   //   setFormData((prev: { passengers: { [x: string]: number } }) => ({
   //     ...prev,
@@ -56,7 +63,7 @@ const WhereAndWhen = ({
   //   }));
   // };
 
-   // ✅ Update formData when passengers change
+  // ✅ Update formData when passengers change
   // useEffect(() => {
   //   setFormData((prev: any) => ({
   //     ...prev,
@@ -66,28 +73,29 @@ const WhereAndWhen = ({
   // }, [totalPassengers, totalLuggage]);
 
   const updatePassenger = (key: PassengerKey, value: number) => {
-  setFormData((prev: any) => {
-    const newPassengers = {
-      ...prev.passengers,
-      [key]: Math.max(0, (prev.passengers?.[key] || 0) + value),
-    };
-    
-    console.log("🔍 updatePassenger:", {
-      key,
-      value,
-      before: prev.passengers,
-      after: newPassengers,
+    setFormData((prev: any) => {
+      const newPassengers = {
+        ...prev.passengers,
+        [key]: Math.max(0, (prev.passengers?.[key] || 0) + value),
+      };
+
+      console.log("🔍 updatePassenger:", {
+        key,
+        value,
+        before: prev.passengers,
+        after: newPassengers,
+      });
+
+      const total =
+        (newPassengers.passengers || 0) + (newPassengers.child_seats || 0);
+      return {
+        ...prev,
+        passengers: newPassengers,
+        totalPassengers: total,
+        totalLuggage: newPassengers.bags || 0,
+      };
     });
-    
-    const total = (newPassengers.passengers || 0) + (newPassengers.child_seats || 0);
-    return {
-      ...prev,
-      passengers: newPassengers,
-      totalPassengers: total,
-      totalLuggage: newPassengers.bags || 0,
-    };
-  });
-};
+  };
 
   const [draftStop, setDraftStop] = useState<{
     type: "pickup" | "dropoff";
@@ -96,33 +104,34 @@ const WhereAndWhen = ({
 
   // helper function to add stop to parent state
 
-
   const mode = formData.mode ?? "point_to_point";
   const extraStops = formData.extraStops || [];
 
   const draftInputRef = usePlacesAutocomplete(
-  draftStop?.location || "",
-  (address) => {
-    setDraftStop((p) => (p ? { ...p, location: address } : p));
-  }
-);
+    draftStop?.location || "",
+    (address) => {
+      setDraftStop((p) => (p ? { ...p, location: address } : p));
+    },
+  );
 
-const savedDistance = getDistanceData();
+  const savedDistance = getDistanceData();
 
-const { distance, loading, calculateDistance } = useDistanceCalculator(savedDistance);
+  const { distance, loading, calculateDistance } =
+    useDistanceCalculator(savedDistance);
 
-useEffect(() => {
-  if (pickup_address && dropoff_address) {
-    calculateDistance(pickup_address, dropoff_address);
-  }
-}, [pickup_address, dropoff_address, calculateDistance]);
-
-
-
+  useEffect(() => {
+    if (pickup_address && dropoff_address) {
+      calculateDistance(pickup_address, dropoff_address);
+    }
+  }, [pickup_address, dropoff_address, calculateDistance]);
 
   // Calculate distance when pickup or dropoff changes
   useEffect(() => {
-    if (pickup_address && dropoff_address && pickup_address !== dropoff_address) {
+    if (
+      pickup_address &&
+      dropoff_address &&
+      pickup_address !== dropoff_address
+    ) {
       calculateDistance(pickup_address, dropoff_address);
     }
   }, [pickup_address, dropoff_address, calculateDistance]);
@@ -144,7 +153,7 @@ useEffect(() => {
   //   }
   // }, [distance, setFormData]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (distance) {
       const distanceKm = distance.distanceValue
         ? Number((distance.distanceValue / 1000).toFixed(1))
@@ -165,14 +174,18 @@ useEffect(() => {
   const calculateTotalDistance = useCallback(async () => {
     if (!pickup_address || !dropoff_address) return null;
 
-    const allLocations = [pickup_address, ...extraStops.map((s: { location: any; }) => s.location), dropoff_address];
+    const allLocations = [
+      pickup_address,
+      ...extraStops.map((s: { location: any }) => s.location),
+      dropoff_address,
+    ];
     let totalDistance = 0;
     let totalDuration = 0;
 
     // Create distance matrix service instance
     const { google } = window as any;
     if (!google?.maps?.DistanceMatrixService) {
-      console.error('Google Maps DistanceMatrixService not available');
+      console.error("Google Maps DistanceMatrixService not available");
       return null;
     }
 
@@ -180,7 +193,7 @@ useEffect(() => {
     for (let i = 0; i < allLocations.length - 1; i++) {
       const origin = allLocations[i];
       const destination = allLocations[i + 1];
-      
+
       if (origin && destination) {
         try {
           const result = await new Promise<any>((resolve) => {
@@ -194,18 +207,20 @@ useEffect(() => {
               },
               (response: any, status: string) => {
                 resolve({ response, status });
-              }
+              },
             );
           });
 
-          if (result.status === 'OK' && 
-              result.response?.rows[0]?.elements[0]?.status === 'OK') {
+          if (
+            result.status === "OK" &&
+            result.response?.rows[0]?.elements[0]?.status === "OK"
+          ) {
             const element = result.response.rows[0].elements[0];
             totalDistance += element.distance.value;
             totalDuration += element.duration.value;
           }
         } catch (err) {
-          console.error('Error calculating leg distance:', err);
+          console.error("Error calculating leg distance:", err);
         }
       }
     }
@@ -217,15 +232,14 @@ useEffect(() => {
 
     return {
       totalDistance: `${distanceInKm} km`,
-      totalDuration: `${durationInHours > 0 ? `${durationInHours}h ` : ''}${durationInMinutes}m`,
+      totalDuration: `${durationInHours > 0 ? `${durationInHours}h ` : ""}${durationInMinutes}m`,
       totalDistanceValue: totalDistance,
       totalDurationValue: totalDuration,
       distance_km: Number(distanceInKm),
     };
   }, [pickup_address, dropoff_address, extraStops]);
 
- 
- // Extra stops add করার সময় distance update করুন
+  // Extra stops add করার সময় distance update করুন
   const addExtraStop = async (stop: {
     type: "pickup" | "dropoff";
     location: string;
@@ -247,151 +261,185 @@ useEffect(() => {
     setDraftStop(null);
   };
 
+  //   const handleSelectVehicle = () => {
+  //   if (!formData?.pickup_address) {
+  //     toast.error("Pickup address is required");
+  //     return;
+  //   }
 
-//   const handleSelectVehicle = () => {
-//   if (!formData?.pickup_address) {
-//     toast.error("Pickup address is required");
-//     return;
-//   }
+  //   if (!formData?.dropoff_address) {
+  //     toast.error("Dropoff address is required");
+  //     return;
+  //   }
 
-//   if (!formData?.dropoff_address) {
-//     toast.error("Dropoff address is required");
-//     return;
-//   }
+  //    const total = (formData?.passengers?.passengers || 0) + (formData?.passengers?.child_seats || 0);
 
-//    const total = (formData?.passengers?.passengers || 0) + (formData?.passengers?.child_seats || 0);
-    
-//     if (total <= 0) {
-//       toast.error("Please select at least 1 passenger and 1 kid");
-//       return;
-//     }
+  //     if (total <= 0) {
+  //       toast.error("Please select at least 1 passenger and 1 kid");
+  //       return;
+  //     }
 
-//     // ✅ Save total to formData
-//     setFormData((prev: any) => ({
-//       ...prev,
-//       totalPassengers: total,
-//       totalLuggage: formData?.passengers?.bags || 0,
-//     }));
+  //     // ✅ Save total to formData
+  //     setFormData((prev: any) => ({
+  //       ...prev,
+  //       totalPassengers: total,
+  //       totalLuggage: formData?.passengers?.bags || 0,
+  //     }));
 
-//   onNext();
-// };
+  //   onNext();
+  // };
 
-    const handleSelectVehicle = async () => {
-  if (!formData?.pickup_address) {
-    toast.error("Pickup address is required");
-    return;
-  }
-
-  if (!formData?.dropoff_address) {
-    toast.error("Dropoff address is required");
-    return;
-  }
-
-  const passengers = formData?.passengers?.passengers || 0;
-  const children = formData?.passengers?.child_seats || 0;
-  const bags = formData?.passengers?.bags || 0;
-  const total = passengers + children;
-
-  if (total <= 0) {
-    toast.error("Please select at least 1 passenger");
-    return;
-  }
-
-  let distanceKm = formData?.distance_km || 0;
-  let distanceValue = (formData as any)?.distanceValue || 0;
-
-  // ✅ distance না থাকলে calculate
-  if (!distanceKm) {
-    try {
-      const result = await calculateDistance(
-        formData.pickup_address,
-        formData.dropoff_address
-      );
-
-      distanceValue =
-        (result as any)?.distanceValue ?? (distance as any)?.distanceValue;
-
-      distanceKm = distanceValue
-        ? Number((distanceValue / 1000).toFixed(1))
-        : 0;
-
-      if (!distanceKm) {
-        toast.error("Distance calculate করা যায়নি, আবার চেষ্টা করুন");
-        return;
-      }
-    } catch (err) {
-      console.error("Distance calc failed:", err);
-      toast.error("Distance calculate করা যায়নি");
+  const handleSelectVehicle = async () => {
+    if (!formData?.pickup_address) {
+      toast.error("Pickup address is required");
       return;
     }
-  }
 
-  // ✅ একবারেই সব set করুন
-  setFormData((prev: any) => ({
-    ...prev,
-    passengers: {
-      passengers: passengers + children,
-      child_seats: children,
-      bags: bags,
-    },
-    totalPassengers: total,
-    totalLuggage: bags,
-    distance_km: distanceKm,
-    distanceValue: distanceValue,
-  }));
+    if (!formData?.dropoff_address) {
+      toast.error("Dropoff address is required");
+      return;
+    }
 
-  onNext();
-};
+    const passengers = formData?.passengers?.passengers || 0;
+    const children = formData?.passengers?.child_seats || 0;
+    const bags = formData?.passengers?.bags || 0;
+    const total = passengers + children;
 
+    if (total <= 0) {
+      toast.error("Please select at least 1 passenger");
+      return;
+    }
 
+    let distanceKm = formData?.distance_km || 0;
+    let distanceValue = (formData as any)?.distanceValue || 0;
 
+    // ✅ distance না থাকলে calculate
+    if (!distanceKm) {
+      try {
+        const result = await calculateDistance(
+          formData.pickup_address,
+          formData.dropoff_address,
+        );
+
+        distanceValue =
+          (result as any)?.distanceValue ?? (distance as any)?.distanceValue;
+
+        distanceKm = distanceValue
+          ? Number((distanceValue / 1000).toFixed(1))
+          : 0;
+
+        if (!distanceKm) {
+          toast.error("Distance calculate করা যায়নি, আবার চেষ্টা করুন");
+          return;
+        }
+      } catch (err) {
+        console.error("Distance calc failed:", err);
+        toast.error("Distance calculate করা যায়নি");
+        return;
+      }
+    }
+
+    // ✅ একবারেই সব set করুন
+    setFormData((prev: any) => ({
+      ...prev,
+      passengers: {
+        passengers: passengers + children,
+        child_seats: children,
+        bags: bags,
+      },
+      totalPassengers: total,
+      totalLuggage: bags,
+      distance_km: distanceKm,
+      distanceValue: distanceValue,
+    }));
+
+    onNext();
+  };
 
   return (
     <div>
       <div className="rounded-xl bg-white p-4 md:p-8 shadow-sm border">
         {/* Header */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-col md:flex-row md:items-center md:justify-between">
-          <h2 className="text-lg font-semibold tracking-wide">WHERE & WHEN</h2>
+        <div className="mb-6 sm:flex-col md:flex-row">
+          <h2 className="text-lg font-semibold tracking-wide mb-3">WHERE & WHEN</h2>
 
-          <div className="flex h-10 w-full overflow-hidden md:rounded-2xl border md:w-auto">
-            {/* TRANSFER */}
-            <button
-              onClick={() =>
-                setFormData((prev: any) => ({
-                  ...prev,
-                  mode: "point_to_point",
-                }))
-              }
-              className={`flex w-1/2 justify-center items-center gap-2 px-2 py-2 text-xs transition-colors cursor-pointer md:w-auto md:px-4 md:text-sm
-      ${
-        mode === "point_to_point"
-          ? "bg-black text-white"
-          : "bg-white text-black hover:bg-gray-200"
-      }`}
+          {/* Mode Dropdown */}
+          <Select
+            value={mode}
+            onValueChange={(value) =>
+              setFormData((prev: any) => ({
+                ...prev,
+                mode: value,
+              }))
+            }
+          >
+            <SelectTrigger
+              className="
+      h-10 w-full md:w-auto
+      rounded-2xl border
+      px-4 text-xs md:text-sm font-medium
+      cursor-pointer
+      bg-black text-white
+      data-[state=open]:ring-2 data-[state=open]:ring-black/10
+      [&>svg]:text-white
+    "
             >
-              <FiMapPin className="text-xs md:text-sm" />
-              TRANSFER
-            </button>
+              <SelectValue placeholder="Select mode" />
+            </SelectTrigger>
 
-            {/* HOURLY */}
-            <button
-              onClick={() =>
-                setFormData((prev: any) => ({
-                  ...prev,
-                  mode: "hourly",
-                }))
-              }
-              className={`flex w-1/2 justify-center items-center gap-2 px-2 py-2 text-xs transition-colors cursor-pointer md:w-auto md:px-4 md:text-sm
-      ${
-        mode === "hourly"
-          ? "bg-black text-white"
-          : "bg-white text-black hover:bg-gray-200"
-      }`}
+            <SelectContent
+              position="popper"
+              side="bottom"
+              align="end"
+              sideOffset={4}
+              avoidCollisions={false}
+              sticky="always"
+              hideWhenDetached={false}
+              className="rounded-xl"
             >
-              <FiClock className="text-xs md:text-sm" />
-              HOURLY
-            </button>
-          </div>
+              <SelectItem
+                value="point_to_point"
+                className="
+        cursor-pointer rounded-lg
+        data-highlighted:bg-black data-highlighted:text-white
+        data-[state=checked]:bg-black data-[state=checked]:text-white
+        data-[state=checked]:font-semibold
+      "
+              >
+                <div className="flex items-center gap-2">
+                  <FiMapPin /> TRANSFER
+                </div>
+              </SelectItem>
+
+              <SelectItem
+                value="hourly"
+                className="
+        cursor-pointer rounded-lg
+        data-highlighted:bg-black data-highlighted:text-white
+        data-[state=checked]:bg-black data-[state=checked]:text-white
+        data-[state=checked]:font-semibold
+      "
+              >
+                <div className="flex items-center gap-2">
+                  <FiClock /> HOURLY
+                </div>
+              </SelectItem>
+
+              <SelectItem
+                value="airport"
+                className="
+        cursor-pointer rounded-lg
+        data-highlighted:bg-black data-highlighted:text-white
+        data-[state=checked]:bg-black data-[state=checked]:text-white
+        data-[state=checked]:font-semibold
+      "
+              >
+                <div className="flex items-center gap-2">
+                  <FiSend /> AIRPORT
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         {mode === "point_to_point" && (
           <>
@@ -420,26 +468,25 @@ useEffect(() => {
                 extraStops={extraStops}
                 pickup_address={pickup_address}
                 dropoff_address={dropoff_address}
-                
-                 setExtraStops={(stops) => {
-              setFormData((prev: any) => ({
-                ...prev,
-                extraStops:
-                  typeof stops === "function"
-                    ? stops(prev.extraStops || [])
-                    : stops,
-              }));
-              
-              // Recalculate distance when stops change
-              calculateTotalDistance().then(total => {
-                if (total) {
+                setExtraStops={(stops) => {
                   setFormData((prev: any) => ({
                     ...prev,
-                    ...total,
+                    extraStops:
+                      typeof stops === "function"
+                        ? stops(prev.extraStops || [])
+                        : stops,
                   }));
-                }
-              });
-            }}
+
+                  // Recalculate distance when stops change
+                  calculateTotalDistance().then((total) => {
+                    if (total) {
+                      setFormData((prev: any) => ({
+                        ...prev,
+                        ...total,
+                      }));
+                    }
+                  });
+                }}
                 onPickupChange={(v) =>
                   setFormData((prev: any) => ({ ...prev, pickup_address: v }))
                 }
@@ -455,7 +502,6 @@ useEffect(() => {
             >
               + ADD STOP
             </button>
-
 
             {/* Add an Extra Stop */}
             {draftStop && (
@@ -577,16 +623,16 @@ useEffect(() => {
             </div>
 
             <div className="mb-6">
-               <DistanceDisplay
-            distance={distance?.distance || formData.distance}
-            duration={distance?.duration || formData.duration}
-            loading={loading}
-          />
+              <DistanceDisplay
+                distance={distance?.distance || formData.distance}
+                duration={distance?.duration || formData.duration}
+                loading={loading}
+              />
             </div>
 
             {/* CTA */}
             <div className="md:flex gap-5  md:justify-end">
-             {/* <Button
+              {/* <Button
                 onClick={handleSeePriceQuote}
                 className="w-full md:w-32 mb-2 md:mb-0 cursor-pointer"
               >
@@ -605,6 +651,22 @@ useEffect(() => {
         {mode === "hourly" && (
           <>
             <HourlyForm
+              formData={formData}
+              setFormData={setFormData}
+              onNext={onNext}
+              pickup_address={pickup_address}
+              dropoff_address={dropoff_address}
+              // passengers={passengers}
+              // pickupDate={pickupDate}
+              // pickupTime={pickupTime}
+            />
+          </>
+        )}
+
+        {/* airport component */}
+        {mode === "airport" && (
+          <>
+            <AirportForm
               formData={formData}
               setFormData={setFormData}
               onNext={onNext}
