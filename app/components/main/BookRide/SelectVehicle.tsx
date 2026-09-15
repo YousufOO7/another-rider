@@ -7,6 +7,7 @@ import ButtonLoader from "@/app/utils/common/ButtonLoader";
 import { Button } from "@/components/ui/button";
 import VehicleCard from "@/components/ui/VehicleCart";
 import { useEffect, useState } from "react";
+import SelectVehiclePriceBreakdown from "./SelectVehiclePriceBreakdown";
 
 interface Props {
   formData: any;
@@ -16,44 +17,42 @@ interface Props {
 }
 
 const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
-
-      const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [createBooking] = useCreateBookingsMutation({});
   const [loading, setLoading] = useState<boolean>(false);
-  
+
   const buildPayload = (includeVehicleId = false) => {
-  const pickupDateTime = formData.pickupDate
-    ? `${formData.pickupDate.getFullYear()}-${String(
-        formData.pickupDate.getMonth() + 1
-      ).padStart(2, "0")}-${String(
-        formData.pickupDate.getDate()
-      ).padStart(2, "0")} ${formData.pickupTime}`
-    : null;
+    const pickupDateTime = formData.pickupDate
+      ? `${formData.pickupDate.getFullYear()}-${String(
+          formData.pickupDate.getMonth() + 1,
+        ).padStart(2, "0")}-${String(formData.pickupDate.getDate()).padStart(
+          2,
+          "0",
+        )} ${formData.pickupTime}`
+      : null;
 
-  const totalHours =
-    Number(formData.hours || 0) +
-    Number(formData.minutes || 0) / 60;
+    const totalHours =
+      Number(formData.hours || 0) + Number(formData.minutes || 0) / 60;
 
-  return {
-    service_type: formData.mode,
-    pickup_time: pickupDateTime,
-    pickup_address: formData.pickup_address,
-    dropoff_address: formData.dropoff_address,
-    passengers: formData.passengers.passengers,
-    distance_km: formData.distanceValue / 1000,
-    child_seats: formData.passengers.kids || 0,
-    hours: totalHours,
-    ...(includeVehicleId && {
-      vehicle_class_id: formData.vehicle?.vehicle_class_id,
-    }),
+    return {
+      service_type: formData.mode,
+      pickup_time: pickupDateTime,
+      pickup_address: formData.pickup_address,
+      dropoff_address: formData.dropoff_address,
+      passengers: formData.passengers.passengers,
+      distance_km: formData.distanceValue / 1000,
+      child_seats: formData.passengers.kids || 0,
+      hours: totalHours,
+      ...(includeVehicleId && {
+        vehicle_class_id: formData.vehicle?.vehicle_class_id,
+      }),
+    };
   };
-};
-
 
   useEffect(() => {
     const fetchVehicles = async () => {
       setLoading(true);
-      
+
       const payload = buildPayload(false);
       try {
         const res = await createBooking(payload).unwrap();
@@ -65,34 +64,29 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
     };
     fetchVehicles();
   }, [
-  formData.pickupDate,
-  formData.pickupTime,
-  formData.pickup_address,
-  formData.dropoff_address,
-  formData.passengers,
-  formData.distanceValue,
-  formData.hours,
-  formData.minutes,
-  formData.mode,
-]);
+    formData.pickupDate,
+    formData.pickupTime,
+    formData.pickup_address,
+    formData.dropoff_address,
+    formData.passengers,
+    formData.distanceValue,
+    formData.hours,
+    formData.minutes,
+    formData.mode,
+  ]);
 
   const totalPassengers = formData.totalPassengers || 0;
   const totalLuggage = formData.totalLuggage || 0;
   const selectedVehicle = formData?.vehicle;
-  const basePrice = selectedVehicle?.calculation?.base_price || 0;
-  const gratuityAmount = selectedVehicle?.calculation?.gratuity_amount || 0;
-  const taxesAmount = selectedVehicle?.calculation?.tax_amount || 0;
-  const ratePrice = selectedVehicle?.calculation?.rate || 0;
-  const kilometers = selectedVehicle?.calculation?.km || 0;
-  const totalHours  = selectedVehicle?.calculation?.hours || 0;
 
+  
+ 
 
   const handleNext = async () => {
-  if (!formData.vehicle) return;
+    if (!formData.vehicle) return;
 
-  onNext();
-};
-
+    onNext();
+  };
 
   return (
     <div className="mb-20">
@@ -116,7 +110,7 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
         {/* Loading */}
         {loading && (
           <p className="text-sm justify-center flex py-4">
-            <ButtonLoader /> 
+            <ButtonLoader />
           </p>
         )}
 
@@ -131,7 +125,9 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
                 luggage: totalLuggage,
                 service_type: formData?.mode,
               }}
-              selected={formData.vehicle?.vehicle_class_id === vehicle.vehicle_class_id}
+              selected={
+                formData.vehicle?.vehicle_class_id === vehicle.vehicle_class_id
+              }
               onSelect={() =>
                 setFormData((prev: any) => ({ ...prev, vehicle }))
               }
@@ -139,59 +135,10 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
           ))}
         </div>
 
-        <div className="border py-5 p-2 md:p-6 flex flex-col md:flex-row justify-between">
-           <div>
-              <p className="text-muted-foreground">Base Price</p>
-              <p className="font-medium">
-                {basePrice ? `$${basePrice.toFixed(2)}` : "$0.00"}
-              </p>
-            </div>
-             <div>
-              <p className="text-muted-foreground">Taxes & fees</p>
-              <p className="font-medium">
-                {taxesAmount ? `$${taxesAmount.toFixed(2)}` : "$0.00"}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Gratuity</p>
-              <p className="font-medium">
-                {gratuityAmount ? `$${gratuityAmount.toFixed(2)}` : "$0.00"}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Rate</p>
-              <p className="font-medium">
-                {ratePrice ? `$${ratePrice.toFixed(2)}` : "$0.00"}
-              </p>
-            </div>
-            {
-              totalHours > 0 && (
-              <div>
-                  <p className="text-muted-foreground">Hourly Rate</p>
-                  <p className="font-medium">
-                    {totalHours ? `$${totalHours.toFixed(2)}` : "$0.00"}
-                  </p>
-                </div>
-              )
-
-            }
-            
-            <div>
-              <p className="text-muted-foreground">Kilometers</p>
-              <p className="font-medium">
-                {kilometers ? `${kilometers.toFixed(2)} km` : "0.00 km"}
-              </p>
-            </div>
-            <div className="text-right">
-            <p className="text-muted-foreground">TOTAL PAID</p>
-            <p className="text-lg font-bold">
-              {`$${(
-                (selectedVehicle?.total_price || 0)
-              )
-                .toFixed(2)}`}
-            </p>
-          </div>
-        </div>
+               {/* ✅ Price Breakdown component */}
+        {selectedVehicle && (
+          <SelectVehiclePriceBreakdown vehicle={selectedVehicle} />
+        )}
 
         {/* Next button */}
         <div className="flex justify-end  pb-5 p-2 md:p-6">
