@@ -375,16 +375,20 @@ const WhereAndWhen = ({
           >
             <SelectTrigger
               className="
-      h-10 w-full md:w-auto
-      rounded-2xl border
-      px-4 text-xs md:text-sm font-medium
-      cursor-pointer
-      bg-black text-white
-      data-[state=open]:ring-2 data-[state=open]:ring-black/10
-      [&>svg]:text-white
+    h-10 w-full md:w-auto
+    rounded-2xl border
+    px-4 text-xs md:text-sm font-medium
+    cursor-pointer
+    bg-black text-white
+
+    [&>svg]:text-white
+    [&>svg]:stroke-white
+
+    data-[state=open]:ring-2
+    data-[state=open]:ring-black/10
     "
             >
-              <SelectValue placeholder="Select mode" />
+              <SelectValue  placeholder="Select mode" />
             </SelectTrigger>
 
             <SelectContent
