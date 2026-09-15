@@ -9,7 +9,7 @@ import {
   Car,
   ChevronRight,
   Clock,
-  MapPin,
+  // MapPin,
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,31 +60,43 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
     passengers,
     vehicle,
     booking_id,
+    extraStops,
   } = rideData;
 
   // Build full itinerary: pickup → extra stops → dropoff
-  // const itinerary: Stop[] = [
-  //   { type: "pickup", location: pickup_address, dateTime: pickupDate },
-  //   ...(extraStops || []),
-  //   { type: "dropoff", location: dropoff_address },
-  // ];
+  const itinerary = [
+    {
+      type: "pickup" as const,
+      address: pickup_address,
+      dateTime: pickupDate,
+    },
+    ...(extraStops || []).map((stop: any, i: number) => ({
+      type: "stop" as const,
+      address: stop.location || stop.address || "",
+      label: `Stop ${i + 1}`,
+    })),
+    {
+      type: "dropoff" as const,
+      address: dropoff_address,
+    },
+  ];
 
   // Format date/time nicely
-  // const formatDateTime = (dateStr?: string, timeStr?: string) => {
-  //   if (!dateStr) return "~ Estimated";
-  //   const date = new Date(dateStr);
-  //   if (timeStr) {
-  //     const [hours, minutes] = timeStr.split(":");
-  //     date.setHours(Number(hours));
-  //     date.setMinutes(Number(minutes));
-  //   }
-  //   return date.toLocaleString("en-US", {
-  //     month: "short",
-  //     day: "numeric",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   });
-  // };
+  const formatDateTime = (dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return "~ Estimated";
+    const date = new Date(dateStr);
+    if (timeStr) {
+      const [hours, minutes] = timeStr.split(":");
+      date.setHours(Number(hours));
+      date.setMinutes(Number(minutes));
+    }
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   // Default vehicle if none
   const vehicleName = vehicle?.name || "N/A";
@@ -186,39 +198,88 @@ const RideConfirm = ({ rideData }: RideConfirmProps) => {
         {/* Route Timeline */}
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
           <div className="flex items-start gap-4">
-            {/* Timeline */}
-            <div className="flex flex-col items-center pt-1">
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-green-500 bg-white" />
-              <div className="w-0.5 h-14 bg-gray-300 my-1" />
-              <div className="w-3.5 h-3.5 rounded-full bg-red-500" />
-            </div>
-
             {/* Location details */}
-            <div className="flex-1 space-y-4">
-              <div>
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <MapPin className="h-3.5 w-3.5 text-green-500" />
-                  <span className="text-xs font-medium text-gray-500">
-                    Pickup
-                  </span>
-                  <span className="text-xs text-gray-400 ml-auto">
-                    {pickupTime || "N/A"}
-                  </span>
-                </div>
-                <p className="text-sm font-medium text-gray-800 leading-tight">
-                  {pickup_address}
-                </p>
+            <div className="flex gap-4">
+              {/* Timeline Dots */}
+              <div className="flex flex-col items-center">
+                {itinerary.map((stop, index) => {
+                  const isPickup = index === 0;
+                  const isDropoff = index === itinerary.length - 1;
+
+                  return (
+                    <div key={index} className="flex flex-col items-center">
+                      {/* Dot */}
+                      <div
+                        className={`w-4 h-4 rounded-full border-2 ${
+                          isPickup
+                            ? "bg-green-600 border-green-600"
+                            : isDropoff
+                              ? "bg-red-500 border-red-500"
+                              : "bg-blue-500 border-blue-500"
+                        }`}
+                      />
+                      {/* Vertical line */}
+                      {index < itinerary.length - 1 && (
+                        <div
+                          className="w-px bg-gray-300"
+                          style={{ minHeight: "40px" }}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <div>
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <MapPin className="h-3.5 w-3.5 text-red-500" />
-                  <span className="text-xs font-medium text-gray-500">
-                    Drop-off
-                  </span>
-                </div>
-                <p className="text-sm font-medium text-gray-800 leading-tight">
-                  {dropoff_address}
-                </p>
+
+              {/* Timeline Content */}
+              <div className="flex flex-col space-y-6 flex-1">
+                {itinerary.map((stop, index) => {
+                  const isPickup = index === 0;
+                  const isDropoff = index === itinerary.length - 1;
+                  const isExtraStop = !isPickup && !isDropoff;
+
+                  return (
+                    <div key={index}>
+                      {/* Date/Time for pickup, label for others */}
+                      <p className="text-sm font-medium">
+                        {isPickup
+                          ? formatDateTime(pickupDate, pickupTime)
+                          : isDropoff
+                            ? "Final Drop-off"
+                            : `Stop ${index}`}
+                      </p>
+
+                      {/* Label & Location */}
+                      <p className="text-xs text-muted-foreground">
+                        {isPickup && (
+                          <>
+                            <span className="font-semibold text-green-700">
+                              Pickup:{" "}
+                            </span>
+                            {stop.address}
+                          </>
+                        )}
+
+                        {isExtraStop && (
+                          <>
+                            <span className="font-semibold text-blue-700">
+                              Extra Stop:{" "}
+                            </span>
+                            {stop.address}
+                          </>
+                        )}
+
+                        {isDropoff && (
+                          <>
+                            <span className="font-semibold text-red-700">
+                              Drop-off:{" "}
+                            </span>
+                            {stop.address}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -43,6 +43,9 @@ const SelectVehicle = ({ onNext, onBack, formData, setFormData }: Props) => {
       distance_km: formData.distanceValue / 1000,
       child_seats: formData.passengers.kids || 0,
       hours: totalHours,
+      stops: (formData.extraStops || []).map((stop: any) => ({
+      address: stop.location,
+    })),
       ...(includeVehicleId && {
         vehicle_class_id: formData.vehicle?.vehicle_class_id,
       }),

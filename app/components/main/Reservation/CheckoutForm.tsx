@@ -145,6 +145,9 @@ export default function CheckoutForm({ onSuccess }: CheckoutFormProps) {
         airlines: passengerInfoData.airline || "",
         notes: passengerInfoData.instructions || "",
         child_seat_requested: passengerInfoData.childSeat || false,
+        stops: (storedData.extraStops || []).map((stop: any) => ({
+    address: stop.location,
+  })),
       };
 
       // 3️⃣ Booking create করুন
