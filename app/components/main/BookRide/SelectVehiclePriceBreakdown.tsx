@@ -1,3 +1,5 @@
+import RequiredStar from "@/app/utils/common/RequiredStar";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface Props {
   vehicle: any;
@@ -216,6 +218,9 @@ const SelectVehiclePriceBreakdown = ({ vehicle }: Props) => {
             <p className="text-xl font-bold">{kilometers.toFixed(2)} km</p>
           </div>
         </div>
+
+        <h1 className="text-lg font-bold mt-1">Total Price + Rate Buffer Amount = Authorization Amount <RequiredStar /></h1>
+        <p className="text-base font-normal mt-2">The authorized amount is not the final price. After the trip is being completed the final rate will be calculated and return the holding amount. <RequiredStar /> </p>
       </div>
     </div>
   );
