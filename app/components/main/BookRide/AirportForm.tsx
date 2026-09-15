@@ -503,6 +503,29 @@ const AirportForm = ({
           />
 
           <Counter
+            label="Bags"
+            value={formData.passengers?.bags || 0}
+            onIncrement={() =>
+              setFormData((p: any) => ({
+                ...p,
+                passengers: {
+                  ...p.passengers,
+                  bags: (p.passengers?.bags || 0) + 1,
+                },
+              }))
+            }
+            onDecrement={() =>
+              setFormData((p: any) => ({
+                ...p,
+                passengers: {
+                  ...p.passengers,
+                  bags: Math.max(0, (p.passengers?.bags || 0) - 1),
+                },
+              }))
+            }
+          />
+
+          <Counter
             label="Kids"
             value={formData.passengers?.child_seats || 0}
             onIncrement={() =>
@@ -528,28 +551,7 @@ const AirportForm = ({
             }
           />
 
-          <Counter
-            label="Bags"
-            value={formData.passengers?.bags || 0}
-            onIncrement={() =>
-              setFormData((p: any) => ({
-                ...p,
-                passengers: {
-                  ...p.passengers,
-                  bags: (p.passengers?.bags || 0) + 1,
-                },
-              }))
-            }
-            onDecrement={() =>
-              setFormData((p: any) => ({
-                ...p,
-                passengers: {
-                  ...p.passengers,
-                  bags: Math.max(0, (p.passengers?.bags || 0) - 1),
-                },
-              }))
-            }
-          />
+          
         </div>
       </div>
 

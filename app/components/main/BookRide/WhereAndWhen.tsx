@@ -407,7 +407,7 @@ const WhereAndWhen = ({
       "
               >
                 <div className="flex items-center gap-2">
-                  <FiMapPin /> TRANSFER
+                  <FiMapPin className="text-white" /> TRANSFER
                 </div>
               </SelectItem>
 
@@ -421,7 +421,7 @@ const WhereAndWhen = ({
       "
               >
                 <div className="flex items-center gap-2">
-                  <FiClock /> HOURLY
+                  <FiClock className="text-white" /> HOURLY
                 </div>
               </SelectItem>
 
@@ -435,7 +435,7 @@ const WhereAndWhen = ({
       "
               >
                 <div className="flex items-center gap-2">
-                  <FiSend /> AIRPORT
+                  <FiSend className="text-white" /> AIRPORT
                 </div>
               </SelectItem>
             </SelectContent>
@@ -594,8 +594,8 @@ const WhereAndWhen = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-8 text-sm mt-2">
               {[
                 { label: "Passengers", key: "passengers" as const },
-                { label: "Kids", key: "child_seats" as const },
                 { label: "Bags", key: "bags" as const },
+                { label: "Kids", key: "child_seats" as const },
               ].map((item) => (
                 <div key={item.label}>
                   <p className="mb-1 text-gray-500">{item.label}</p>
